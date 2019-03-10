@@ -15,7 +15,7 @@
         <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
-    <select id="queryList" resultType="job">
+    <select id="queryList" resultType="yx.pay.job.domain.Job">
         select job_id          jobId,
                bean_name       beanName,
                method_name     methodName,

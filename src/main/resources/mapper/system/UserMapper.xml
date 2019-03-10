@@ -17,7 +17,7 @@
         <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
     </resultMap>
 
-    <select id="findUserDetail" resultType="user" parameterType="user">
+    <select id="findUserDetail" resultType="yx.pay.system.domain.User" parameterType="yx.pay.system.domain.User">
         SELECT
         u.user_id userId,
         u.username,
