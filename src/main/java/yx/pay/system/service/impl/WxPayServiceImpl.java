@@ -1,7 +1,14 @@
 package yx.pay.system.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import yx.pay.common.utils.WxUtil;
+import yx.pay.system.domain.wx.OrderInfo;
+import yx.pay.system.domain.wx.WxConfig;
 import yx.pay.system.service.WxPayService;
 
 /**
@@ -12,11 +19,27 @@ import yx.pay.system.service.WxPayService;
  */
 @Service
 public class WxPayServiceImpl implements WxPayService {
+    @Autowired
+    private WxUtil util;
+
+
     /**
      * 生成二维码图片
      */
     @Override
-    public String generateQrCodeImages() {
+    public String generateQrCodeImages(OrderInfo orderInfo) {
+        SortedMap<Object, Object> packageParams = new TreeMap<>();
+        //封装通用参数
+        util.commonParams(packageParams);
+
+        packageParams.put("product_id", orderInfo.getOrderNo());//真实商品ID
+        packageParams.put("time_stamp", util.getCurrTime());
+
+        //生成签名
+        String sign = util.createSign("UTF-8", packageParams);
+        //组装二维码信息
+        String qrInfo = util.buildQrCodeInfo(packageParams,sign);
+
         return null;
     }
 
@@ -25,6 +48,14 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     public String sweepQrCodeToPayModeOne() {
+        return null;
+    }
+
+    /**
+     * 长链改短链
+     */
+    @Override
+    public String getShortUrl(String longUrl) {
         return null;
     }
 }

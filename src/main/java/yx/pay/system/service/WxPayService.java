@@ -1,5 +1,7 @@
 package yx.pay.system.service;
 
+import yx.pay.system.domain.wx.OrderInfo;
+
 /**
  * @Description
  * @Author <a href="mailto:cenyingqiang@wxchina.com">yingqiang.Cen</a>
@@ -10,10 +12,15 @@ public interface WxPayService {
     /**
      * 生成二维码图片
      */
-    String generateQrCodeImages();
+    String generateQrCodeImages(OrderInfo orderInfo);
 
     /**
      * 扫码支付 模式1
      */
     String sweepQrCodeToPayModeOne();
+
+    /**
+     * 长链改短链
+     */
+    String getShortUrl(String longUrl);
 }

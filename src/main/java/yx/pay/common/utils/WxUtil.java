@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import yx.pay.system.domain.wx.WxConfig;
@@ -58,7 +61,7 @@ public class WxUtil {
      *
      * @return String
      */
-    public static String getCurrTime() {
+    public String getCurrTime() {
         Date now = new Date();
         String s = outFormat.format(now);
         return s;
@@ -69,7 +72,7 @@ public class WxUtil {
      * @param length
      * @return
      */
-    public static int buildRandom(int length) {
+    public int buildRandom(int length) {
         int num = 1;
         double random = Math.random();
         if (random < 0.1) {
@@ -79,5 +82,34 @@ public class WxUtil {
             num = num * 10;
         }
         return (int) ((random * num));
+    }
+
+    public String createSign(String characterEncoding, SortedMap<Object, Object> packageParams) {
+        StringBuffer sb = new StringBuffer();
+        Set es = packageParams.entrySet();
+        Iterator it = es.iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            String v = (String) entry.getValue();
+            if (null != v && !"".equals(v) && !"sign".equals(k) && !"key".equals(k)) {
+                sb.append(k + "=" + v + "&");
+            }
+        }
+        sb.append("key=" + wxConfig.getAppId());
+        String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();
+        return sign;
+    }
+
+    public String buildQrCodeInfo(SortedMap<Object, Object> packageParams,String sign){
+        StringBuffer qrCode = new StringBuffer();
+        qrCode.append("weixin://wxpay/bizpayurl?");
+        qrCode.append("appid="+wxConfig.getAppId());
+        qrCode.append("&mch_id="+wxConfig.getMchId());
+        qrCode.append("&nonce_str="+packageParams.get("nonce_str"));
+        qrCode.append("&product_id="+packageParams.get("product_id"));
+        qrCode.append("&time_stamp="+packageParams.get("time_stamp"));
+        qrCode.append("&sign="+sign);
+        return qrCode.toString();
     }
 }
