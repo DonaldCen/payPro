@@ -1,11 +1,13 @@
 package yx.pay.system.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import yx.pay.common.utils.QrCodeUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.system.domain.wx.OrderInfo;
 import yx.pay.system.domain.wx.WxConfig;
@@ -17,10 +19,13 @@ import yx.pay.system.service.WxPayService;
  * @Date 2019/3/10
  * @Version 1.0.0
  */
+@Slf4j
 @Service
 public class WxPayServiceImpl implements WxPayService {
     @Autowired
     private WxUtil util;
+    @Autowired
+    private QrCodeUtil qrCodeUtil;
 
 
     /**
@@ -39,8 +44,9 @@ public class WxPayServiceImpl implements WxPayService {
         String sign = util.createSign("UTF-8", packageParams);
         //组装二维码信息
         String qrInfo = util.buildQrCodeInfo(packageParams,sign);
-
-        return null;
+        log.info("qrCode info:[{}]",qrInfo);
+//        qrCodeUtil.createZxingqrCode(qrInfo,);
+        return qrInfo;
     }
 
     /**

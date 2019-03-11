@@ -4,6 +4,12 @@ import java.util.HashMap;
 
 public class FebsResponse extends HashMap<String, Object> {
 
+    public FebsResponse success(){
+        this.put("code","0");
+
+        return this;
+    }
+
     private static final long serialVersionUID = -8713837118340960775L;
 
     public FebsResponse message(String message) {

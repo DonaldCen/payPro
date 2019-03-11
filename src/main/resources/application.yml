@@ -76,6 +76,7 @@ febs:
     jwtTimeOut: 3600
 
 wx:
-  appId: 123
-  appSecret: 123
-  mchId: 123
+  appId: wx62eb98733173fa88
+  appSecret: 7c91fbeb099af0f90d76c2a76051586c
+  mchId: 7c91fbeb099af0f90d76c2a76051586c
+  qrCodeUrl: E:\\

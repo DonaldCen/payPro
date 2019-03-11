@@ -15,6 +15,7 @@ public class WxConfig {
     private String appId;
     private String appSecret;
     private String mchId;
+    private String qrCodeUrl;//二维码图片生成后存放的目录
 
     public String getAppId() {
         return appId;
@@ -38,5 +39,13 @@ public class WxConfig {
 
     public void setMchId(String mchId) {
         this.mchId = mchId;
+    }
+
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
+    }
+
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
     }
 }

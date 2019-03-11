@@ -11,6 +11,10 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import yx.pay.system.domain.wx.WxConfig;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,7 +30,11 @@ import javax.imageio.ImageIO;
  * @Date 2019/3/11
  * @Version 1.0.0
  */
+@Slf4j
+@Component
 public class QrCodeUtil {
+    @Autowired
+    private WxConfig config;
     /*
      * 定义二维码的宽高
      */
@@ -34,7 +42,7 @@ public class QrCodeUtil {
     private static int HEIGHT=300;
     private static String FORMAT="png";//二维码格式
     //生成二维码
-    public static void createZxingqrCode(String content){
+    public  void createZxingqrCode(String content,String qrCodePicName){
         //定义二维码参数
         Map hints=new HashMap();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");//设置编码
@@ -42,12 +50,13 @@ public class QrCodeUtil {
         hints.put(EncodeHintType.MARGIN, 2);//设置边距默认是5
 
         try {
+            StringBuffer pathName = new StringBuffer();
+            pathName.append(config.getQrCodeUrl()).append(qrCodePicName);
             BitMatrix bitMatrix=new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
-            Path path = new File("E:\\qr.png").toPath();
+            Path path = new File(pathName.toString()).toPath();
             MatrixToImageWriter.writeToPath(bitMatrix, FORMAT, path);//写到指定路径下
-
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("create qrCode error..",e);
         }
 
     }
@@ -74,7 +83,6 @@ public class QrCodeUtil {
         String qrcode = "weixin://wxpay/bizpayurl?appid=wx2421b1c4370ec43b" +
                 "&mch_id=10000100" +
                 "&nonce_str=f6808210402125e30663234f94c87a8c&product_id=1&time_stamp=1415949957&sign=512F68131DD251DA4A45DA79CC7EFE9D";
-        createZxingqrCode(qrcode);
 //        readZxingQrCode();
     }
 
