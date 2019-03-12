@@ -12,15 +12,11 @@ public interface WxPayService {
     /**
      * 生成二维码图片
      */
-    String generateQrCodeImages(OrderInfo orderInfo);
+    void generateQrCodeImages(int userId);
 
     /**
      * 扫码支付 模式1
      */
     String sweepQrCodeToPayModeOne();
 
-    /**
-     * 长链改短链
-     */
-    String getShortUrl(String longUrl);
 }

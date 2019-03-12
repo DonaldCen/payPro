@@ -1,7 +1,10 @@
 package yx.pay.system.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import yx.pay.system.dao.wx.OrderInfoMapper;
+import yx.pay.system.domain.wx.OrderInfo;
 import yx.pay.system.service.OrderInfoService;
 
 /**
@@ -12,4 +15,10 @@ import yx.pay.system.service.OrderInfoService;
  */
 @Service
 public class OrderInfoServiceImpl implements OrderInfoService {
+    @Autowired
+    private OrderInfoMapper orderInfoMapper;
+    @Override
+    public int createOrderInfoByUserId(OrderInfo info) {
+        return orderInfoMapper.createOrderInfoByUserId(info);
+    }
 }

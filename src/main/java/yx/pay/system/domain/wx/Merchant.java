@@ -5,10 +5,11 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Merchant {
+public class Merchant implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
@@ -23,10 +24,10 @@ public class Merchant {
     private String idCardNumber;//身份证
     @Column(name = "phone")
     private String phone;//手机号码
-    @Column(name = "create_date")
-    private Date createDate;
-    @Column(name = "update_date")
-    private Date updateDate;
+    @Column(name = "create_time")
+    private Date createTime;
+    @Column(name = "update_time")
+    private Date updateTime;
     @Column(name = "open_id")
     private String openId;
     @Column(name = "qr_code_url")

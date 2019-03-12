@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 import yx.pay.common.domain.FebsResponse;
+import yx.pay.common.utils.QrCodeUtil;
 import yx.pay.system.domain.wx.OrderInfo;
 import yx.pay.system.domain.wx.WxConfig;
+import yx.pay.system.service.OrderInfoService;
 import yx.pay.system.service.WxPayService;
 
 /**
@@ -27,15 +30,19 @@ import yx.pay.system.service.WxPayService;
 public class WxController {
     @Autowired
     private WxPayService wxPayService;
-
+    /**
+     * 指定地方，生成url,然后存储，然后展示
+     *
+     */
     @PostMapping("generateQrCode")
-    public FebsResponse generateQrCode(OrderInfo info){
-        try{
-            wxPayService.generateQrCodeImages(info);
-        }catch (Exception e){
-            log.error("generateQrCode error..",e);
+    public FebsResponse generateQrCode(int userId) {
+        try {
+            wxPayService.generateQrCodeImages(userId);
+        } catch (Exception e) {
+            log.error("generateQrCode error..", e);
+            return new FebsResponse().fail(e.getMessage());
         }
-        return null;
+        return new FebsResponse().success();
     }
 
 

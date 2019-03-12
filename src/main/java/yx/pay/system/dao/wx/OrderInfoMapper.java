@@ -10,4 +10,5 @@ import yx.pay.system.domain.wx.OrderInfo;
  * @Version 1.0.0
  */
 public interface OrderInfoMapper extends MyMapper<OrderInfo> {
+    int createOrderInfoByUserId(OrderInfo info);
 }

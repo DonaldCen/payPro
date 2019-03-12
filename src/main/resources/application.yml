@@ -34,7 +34,7 @@ spring:
         max-idle: 500
         max-active: 2000
         max-wait: 10000
-    timeout: 0
+    timeout: 10
 
 mybatis:
   type-aliases-package: yx.pay.system.domain,cc.mrbird.febs.job.domain

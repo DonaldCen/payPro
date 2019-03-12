@@ -1,14 +1,11 @@
 package yx.pay.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 
 import yx.pay.system.domain.wx.WxConfig;
 
@@ -18,6 +15,7 @@ import yx.pay.system.domain.wx.WxConfig;
  * @Date 2019/3/10
  * @Version 1.0.0
  */
+@Slf4j
 @Component
 public class WxUtil {
     // 获取token接口(GET)
@@ -111,5 +109,64 @@ public class WxUtil {
         qrCode.append("&time_stamp="+packageParams.get("time_stamp"));
         qrCode.append("&sign="+sign);
         return qrCode.toString();
+    }
+
+    public String getRequestXml(SortedMap<Object, Object> parameters) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<xml>");
+        Set es = parameters.entrySet();
+        Iterator it = es.iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            String v = (String) entry.getValue();
+            if ("attach".equalsIgnoreCase(k) || "body".equalsIgnoreCase(k) || "sign".equalsIgnoreCase(k)) {
+                sb.append("<" + k + ">" + "<![CDATA[" + v + "]]></" + k + ">");
+            } else {
+                sb.append("<" + k + ">" + v + "</" + k + ">");
+            }
+        }
+        sb.append("</xml>");
+        return sb.toString();
+    }
+
+    /**
+     * 长链改短链
+     * 公众账号ID appid 是 String(32) wx8888888888888888 微信分配的公众账号ID（企业号corpid即为此appId）
+     * 商户号 mch_id 是 String(32) 1900000109 微信支付分配的商户号
+     * URL链接 long_url 是 String(512、 weixin：//wxpay/bizpayurl?sign=XXXXX&appid=XXXXX&mch_id=XXXXX&product_id=XXXXXX&time_stamp=XXXXXX&nonce_str=XXXXX 需要转换的URL，签名用原串，传输需URLencode
+     * 随机字符串 nonce_str 是 String(32) 5K8264ILTKCH16CQ2502SI8ZNMTM67VS 随机字符串，不长于32位。推荐随机数生成算法
+     * 签名 sign 是 String(32) C380BEC2BFD727A4B6845133519F3AD6 签名，详见签名生成算法
+     * 签名类型 sign_type 否 String(32) HMAC-SHA256 签名类型，目前支持HMAC-SHA256和MD5，默认为MD5
+     */
+
+    public String getShortUrl(String longUrl) {
+        SortedMap<Object, Object> packageParams = new TreeMap<>();
+        String shortUrl = null;
+        try {
+            //封装通用参数
+            commonParams(packageParams);
+            packageParams.put("long_url",longUrl);
+            packageParams.put("sign_type","MD5");
+            //生成签名
+            String sign = createSign("UTF-8", packageParams);
+            packageParams.put("sign", sign);// 签名
+            String requestXML = getRequestXml(packageParams);
+            String resXml = WxHttpUtil.postData(WxUtil.SHORT_URL, requestXML);
+            Map map = XMLUtil.doXMLParse(resXml);
+            String returnCode = (String) map.get("return_code");
+            if("SUCCESS".equals(returnCode)){
+                String resultCode = (String) map.get("return_code");
+                if ("SUCCESS".equals(resultCode)) {
+                    shortUrl = (String) map.get("short_url");
+                }
+            }else{
+                String returnMsg = (String) map.get("return_msg");
+                log.error("getShortUrl failed,returnMsg=[{}]",returnMsg);
+            }
+        } catch (Exception e) {
+            log.error("getShortUrl error..",e);
+        }
+        return shortUrl;
     }
 }

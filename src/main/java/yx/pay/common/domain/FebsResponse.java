@@ -3,10 +3,18 @@ package yx.pay.common.domain;
 import java.util.HashMap;
 
 public class FebsResponse extends HashMap<String, Object> {
+    private static final int FAIL_CODE = -1;
+    private static final int SUCCESS_CODE = 0;
 
-    public FebsResponse success(){
-        this.put("code","0");
+    public FebsResponse success() {
+        this.put("code", SUCCESS_CODE);
+        this.put("msg", "success");
+        return this;
+    }
 
+    public FebsResponse fail(String msg) {
+        this.put("code", FAIL_CODE);
+        this.put("msg", msg);
         return this;
     }
 

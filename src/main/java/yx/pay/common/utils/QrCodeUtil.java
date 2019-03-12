@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yx.pay.system.domain.wx.WxConfig;
+import yx.pay.system.service.WxPayService;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,8 +34,11 @@ import javax.imageio.ImageIO;
 @Slf4j
 @Component
 public class QrCodeUtil {
+    private static final String QR_CODE_PIC_PREFIX = "QR_CODE_PIC_";
+
     @Autowired
     private WxConfig config;
+
     /*
      * 定义二维码的宽高
      */
@@ -42,23 +46,27 @@ public class QrCodeUtil {
     private static int HEIGHT=300;
     private static String FORMAT="png";//二维码格式
     //生成二维码
-    public  void createZxingqrCode(String content,String qrCodePicName){
+    public  void createQrCode(String content,String url){
         //定义二维码参数
         Map hints=new HashMap();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");//设置编码
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);//设置容错等级
         hints.put(EncodeHintType.MARGIN, 2);//设置边距默认是5
-
         try {
-            StringBuffer pathName = new StringBuffer();
-            pathName.append(config.getQrCodeUrl()).append(qrCodePicName);
             BitMatrix bitMatrix=new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
-            Path path = new File(pathName.toString()).toPath();
+            Path path = new File(url).toPath();
             MatrixToImageWriter.writeToPath(bitMatrix, FORMAT, path);//写到指定路径下
         } catch (Exception e) {
             log.error("create qrCode error..",e);
         }
 
+    }
+    public String getQrCodePicName(String userId){
+        StringBuffer sb = new StringBuffer();
+        final String separator = File.separator;
+        sb.append(config.getQrCodeUrl()).append(separator);
+        sb.append(QR_CODE_PIC_PREFIX).append(userId);
+        return sb.toString();
     }
     //读取二维码
     public static void readZxingQrCode(){
