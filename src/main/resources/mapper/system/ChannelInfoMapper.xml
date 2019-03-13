@@ -2,5 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="yx.pay.system.dao.wx.ChannelInfoMapper">
 
+    <resultMap id="channelResultMap" type="yx.pay.system.domain.wx.ChannelInfo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="channel_code" jdbcType="VARCHAR" property="channelCode"/>
+        <result column="channel_name" jdbcType="VARCHAR" property="channelName"/>
+        <result column="trade_type" jdbcType="INTEGER" property="tradeType"/>
+        <result column="channel_cost_rate" jdbcType="DOUBLE" property="chanelCostRate"/>
+        <result column="channel_cost" jdbcType="DOUBLE" property="channelCost"/>
+        <result column="settlement_type" jdbcType="VARCHAR" property="settlementType"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="pay_limit" jdbcType="DOUBLE" property="payLimit"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="findChannelList" resultMap="channelResultMap">
+        SELECT * from t_channel t
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="channelResultMap">
+        SELECT * from t_channel t where t.channel_name = #{channelName}
+    </select>
+
+    <insert id="addChannelInfo" parameterType="yx.pay.system.domain.wx.ChannelInfo">
+        INSERT INTO t_channel(channel_code,channel_name,trade_type,channel_cost_rate,channel_cost,settlement_type,status,pay_limit)
+        VALUES (#{channelInfo.channelCode},#{channelInfo.channelName},#{channelInfo.tradeType},#{channelInfo.channelCostRate}
+        #{channelInfo.channelCost},#{channelInfo.settlementType},#{channelInfo.status},#{channelInfo.payLimit})
+    </insert>
+
+    <update id="updateChannelInfo" parameterType="yx.pay.system.domain.wx.ChannelInfo">
+        UPDATE t_channel
+        set channel_code = #{channelInfo.channelCode},
+            channel_name = #{channelInfo.channelName},
+            trade_type = #{channelInfo.tradeType},
+            channel_cost_rate = #{channelInfo.channelCostRate},
+            channel_cost = #{channelInfo.channelCost},
+            settlement_type = #{channelInfo.settlementType},
+            status = #{channelInfo.status},
+            pay_limit = #{channelInfo.payLimit},
+            update_time = NOW()
+        where id = #{channelInfo.id}
+    </update>
+
 
 </mapper>

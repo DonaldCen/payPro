@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,6 +29,7 @@ import yx.pay.system.service.WxPayService;
  */
 @Slf4j
 @Service
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class WxPayServiceImpl implements WxPayService {
     @Autowired
     private WxUtil util;

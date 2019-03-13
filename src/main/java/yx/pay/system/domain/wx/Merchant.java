@@ -1,14 +1,19 @@
 package yx.pay.system.domain.wx;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@ToString
+@Table(name = "t_merchant")
 public class Merchant implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")

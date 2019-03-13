@@ -13,6 +13,8 @@ import yx.pay.system.service.ChannelInfoService;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 @Slf4j
 @Service
 public class ChannelInfoServiceImpl implements ChannelInfoService {
@@ -33,5 +35,20 @@ public class ChannelInfoServiceImpl implements ChannelInfoService {
             log.error("查询渠道异常", e);
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public ChannelInfo findByName(String channelName) {
+        return this.channelInfoMapper.findByName(channelName);
+    }
+
+    @Override
+    public void addChannelInfo(ChannelInfo channelInfo) {
+        this.channelInfoMapper.addChannelInfo(channelInfo);
+    }
+
+    @Override
+    public void updateChannelInfo(ChannelInfo channelInfo) {
+        this.channelInfoMapper.updateChannelInfo(channelInfo);
     }
 }

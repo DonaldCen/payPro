@@ -1,22 +1,26 @@
 package yx.pay.system.domain.wx;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@ToString
+@Table(name = "t_channel")
 public class ChannelInfo implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
     private Integer id;
     @Column(name = "channel_code")
-    private String channelCode;//通道编码
+    private String channelCode;//渠道编码
     @Column(name = "channel_name")
     private String channelName;
     @Column(name = "trade_type")
@@ -48,4 +52,5 @@ public class ChannelInfo implements Serializable {
     private String createTimeFrom;
     @Transient
     private String createTimeTo;
+
 }
