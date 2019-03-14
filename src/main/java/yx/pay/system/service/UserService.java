@@ -6,6 +6,8 @@ import yx.pay.system.domain.User;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 public interface UserService extends IService<User> {
 
     /**
@@ -99,4 +101,5 @@ public interface UserService extends IService<User> {
      */
     void resetPassword(String[] usernames) throws Exception;
 
+    int addUserAndReturnId(User user) throws Exception;
 }

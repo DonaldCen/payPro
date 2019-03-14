@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import yx.pay.common.domain.FebsConstant;
 import yx.pay.common.domain.QueryRequest;
+import yx.pay.common.service.impl.BaseService;
 import yx.pay.system.dao.wx.ChannelInfoMapper;
 import yx.pay.system.domain.wx.ChannelInfo;
 import yx.pay.system.service.ChannelInfoService;
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 
 @Slf4j
 @Service
-public class ChannelInfoServiceImpl implements ChannelInfoService {
+public class ChannelInfoServiceImpl extends BaseService<ChannelInfo> implements ChannelInfoService {
     @Autowired
     private ChannelInfoMapper channelInfoMapper;
     @Override

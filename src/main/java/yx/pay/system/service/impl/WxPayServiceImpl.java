@@ -45,6 +45,7 @@ public class WxPayServiceImpl implements WxPayService {
      * 生成二维码图片
      */
     @Override
+    @Transactional
     public void generateQrCodeImages(int userId) {
         OrderInfo info = new OrderInfo();
         info.setPayType(OrderPayTypeEnum.CREATE_QR_CODE.getIndex());

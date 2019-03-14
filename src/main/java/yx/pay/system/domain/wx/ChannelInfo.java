@@ -2,6 +2,7 @@ package yx.pay.system.domain.wx;
 
 import lombok.Data;
 import lombok.ToString;
+import yx.pay.system.domain.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import java.util.Date;
 @Data
 @ToString
 @Table(name = "t_channel")
-public class ChannelInfo implements Serializable {
+public class ChannelInfo extends BaseEntity{
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
@@ -39,18 +40,5 @@ public class ChannelInfo implements Serializable {
     private Date createTime;
     @Column(name = "update_time")
     private Date updateTime;
-
-    // 排序字段
-    @Transient
-    private String sortField;
-
-    // 排序规则 ascend 升序 descend 降序
-    @Transient
-    private String sortOrder;
-
-    @Transient
-    private String createTimeFrom;
-    @Transient
-    private String createTimeTo;
 
 }

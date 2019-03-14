@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 @Slf4j
 @Service("userService")
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
@@ -228,5 +230,21 @@ public class UserServiceImpl extends BaseService<User> implements UserService {
             ur.setRoleId(Long.valueOf(roleId));
             this.userRoleMapper.insert(ur);
         });
+    }
+
+    @Override
+    @Transactional
+    public int addUserAndReturnId(User user) throws Exception {
+        // 创建用户
+        user.setCreateTime(new Date());
+        user.setAvatar(User.DEFAULT_AVATAR);
+        user.setPassword(MD5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
+        int userId = this.userMapper.addUserAndReturnId(user);
+
+        // 创建用户默认的个性化配置
+        userConfigService.initDefaultUserConfig(String.valueOf(user.getUserId()));
+        // 将用户相关信息保存到 Redis中
+        userManager.loadUserRedisCache(user);
+        return userId;
     }
 }

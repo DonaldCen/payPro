@@ -67,4 +67,10 @@
             </otherwise>
         </choose>
     </select>
+
+    <insert id="addUserAndReturnId" keyProperty="id" useGeneratedKeys="true"
+            parameterType="yx.pay.system.domain.User">
+        INSERT into t_user(username,password,email,mobiel,create_time,ssex)
+        VALUES(#{user.username},#{user.password},#{user.email},#{user.mobiel},now(),#{user.ssex})
+    </insert>
 </mapper>

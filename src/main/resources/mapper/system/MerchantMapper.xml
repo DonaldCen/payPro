@@ -2,11 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="yx.pay.system.dao.wx.MerchantMapper">
 
+    <resultMap id="merchantResultMap" type="yx.pay.system.domain.wx.Merchant">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="legal_person_name" jdbcType="VARCHAR" property="legalPersonName"/>
+        <result column="busi_license_num" jdbcType="VARCHAR" property="busiLicenseNum"/>
+        <result column="id_card_number" jdbcType="VARCHAR" property="idCardNumber"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="qr_code_url" jdbcType="VARCHAR" property="qrCoreUrl"/>
+    </resultMap>
+
     <update id="updateMerchantQrUrl" parameterType="yx.pay.system.domain.wx.Merchant">
         update t_merchant
         set qr_code_url = #{merchant.qrCodeUrl},
             update_time = now()
         where user_id = #{merchant.userId}
     </update>
+
+    <select id="findMerchantList" resultMap="merchantResultMap">
+          select * from t_merchant
+    </select>
+
+    <select id="findByName" resultMap="merchantResultMap">
+          SELECT * FROM t_merchant WHERE legalPersonName = #{merchantName}
+    </select>
+
+    <insert id="addMerchant" parameterType="yx.pay.system.domain.wx.Merchant">
+          INSERT INTO t_merchant(user_id,legal_person_name,busi_license_num,
+                                 id_card_number,phone,open_id,qr_code_url)
+          VALUES (#{merchant.userId},#{merchant.legalPersonName},#{merchant.busiLicenseNum},
+                  #{merchant.idCardNumber},#{merchant.phone},#{merchant.open_id},#{merchant.qr_code_url})
+    </insert>
 
 </mapper>

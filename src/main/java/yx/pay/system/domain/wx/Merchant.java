@@ -2,6 +2,7 @@ package yx.pay.system.domain.wx;
 
 import lombok.Data;
 import lombok.ToString;
+import yx.pay.system.domain.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import java.util.Date;
 @Data
 @ToString
 @Table(name = "t_merchant")
-public class Merchant implements Serializable {
+public class Merchant extends BaseEntity {
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
