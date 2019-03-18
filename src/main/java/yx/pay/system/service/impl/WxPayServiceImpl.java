@@ -64,13 +64,6 @@ public class WxPayServiceImpl implements WxPayService {
         merchantService.updateMerchantQrUrl(merchant);
     }
 
-    /**
-     * 扫码支付 模式1
-     */
-    @Override
-    public String sweepQrCodeToPayModeOne() {
-        return null;
-    }
 
 
 

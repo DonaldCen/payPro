@@ -1,11 +1,14 @@
 package yx.pay.system.domain.wx;
 
 import lombok.Data;
+import lombok.ToString;
 import yx.pay.system.domain.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,6 +19,8 @@ import java.util.Date;
  * @Version 1.0.0
  */
 @Data
+@ToString
+@Table(name = "t_order")
 public class OrderInfo extends BaseEntity {
     @Id
     @GeneratedValue(generator = "JDBC")

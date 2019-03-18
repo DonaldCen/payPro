@@ -1,10 +1,13 @@
 package yx.pay.system.dao;
 
+import org.springframework.stereotype.Component;
+
 import yx.pay.common.config.MyMapper;
 import yx.pay.system.domain.Menu;
 
 import java.util.List;
 
+@Component
 public interface MenuMapper extends MyMapper<Menu> {
 
     List<Menu> findUserPermissions(String userName);

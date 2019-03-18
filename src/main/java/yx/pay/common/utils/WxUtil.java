@@ -169,4 +169,23 @@ public class WxUtil {
         }
         return shortUrl;
     }
+
+    public boolean isTenpaySign(String characterEncoding, SortedMap<Object, Object> packageParams) {
+        StringBuffer sb = new StringBuffer();
+        Set es = packageParams.entrySet();
+        Iterator it = es.iterator();
+        while(it.hasNext()) {
+            Map.Entry entry = (Map.Entry)it.next();
+            String k = (String)entry.getKey();
+            String v = (String)entry.getValue();
+            if(!"sign".equals(k) && null != v && !"".equals(v)) {
+                sb.append(k + "=" + v + "&");
+            }
+        }
+        sb.append("key=" + wxConfig.getAppId());
+        //算出摘要
+        String mysign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toLowerCase();
+        String tenpaySign = ((String)packageParams.get("sign")).toLowerCase();
+        return tenpaySign.equals(mysign);
+    }
 }

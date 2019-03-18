@@ -6,9 +6,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import yx.pay.common.domain.QueryRequest;
+import yx.pay.common.service.IService;
 import yx.pay.system.domain.wx.Merchant;
 
-public interface MerchantService {
+public interface MerchantService extends IService<Merchant> {
     void updateMerchantQrUrl(Merchant merchant);
 
     List<Merchant> findMerchantList(QueryRequest request, Merchant merchant);

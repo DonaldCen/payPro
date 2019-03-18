@@ -12,13 +12,14 @@ import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import yx.pay.common.domain.FebsConstant;
 import yx.pay.common.domain.QueryRequest;
+import yx.pay.common.service.impl.BaseService;
 import yx.pay.system.dao.wx.MerchantMapper;
 import yx.pay.system.domain.wx.Merchant;
 import yx.pay.system.service.MerchantService;
 
 @Slf4j
 @Service
-public class MerchantServiceImpl implements MerchantService {
+public class MerchantServiceImpl extends BaseService<Merchant> implements MerchantService {
     @Autowired
     private MerchantMapper merchantMapper;
     @Override
