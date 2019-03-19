@@ -1,9 +1,14 @@
 package yx.pay.system.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,12 +52,14 @@ public class WxController {
     private WxPayService wxPayService;
     @Autowired
     private WxUtil wxUtil;
+
     /**
      * 指定地方，生成url,然后存储，然后展示
      *
      */
     @PostMapping("generateQrCode")
-    public FebsResponse generateQrCode(int userId) {
+    public FebsResponse generateQrCode(@RequestBody JSONObject jsonParam) {
+        int userId = (Integer) jsonParam.get("userId");
         try {
             wxPayService.generateQrCodeImages(userId);
         } catch (Exception e) {
@@ -75,9 +82,15 @@ public class WxController {
         log.info("模式一支付回调URL");
         SortedMap<Object, Object> packageParams = new TreeMap<Object, Object>();
         getResponse(request,packageParams);
+        log.info("return data:[{}]", JSON.toJSON(packageParams));
         //判断签名是否正确
         if (wxUtil.isTenpaySign("UTF-8", packageParams)) {
-
+            String id = String.valueOf(packageParams.get("product_id"));
+            if(StringUtils.isNotBlank(id)){
+                int productId = Integer.parseInt(id);
+            }
+        }else{
+            log.info("签名错误");
         }
     }
 

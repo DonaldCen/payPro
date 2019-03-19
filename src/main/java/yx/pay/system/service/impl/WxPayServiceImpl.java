@@ -72,7 +72,7 @@ public class WxPayServiceImpl implements WxPayService {
         //封装通用参数
         util.commonParams(packageParams);
 
-        packageParams.put("product_id", orderId);//真实商品ID
+        packageParams.put("product_id", String.valueOf(orderId));//真实商品ID
         packageParams.put("time_stamp", util.getCurrTime());
 
         //生成签名

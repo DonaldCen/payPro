@@ -1,6 +1,8 @@
 package yx.pay.system.dao;
 
 
+import org.springframework.stereotype.Component;
+
 import yx.pay.common.config.MyMapper;
 import yx.pay.system.domain.LoginLog;
 import yx.pay.system.domain.User;
@@ -8,6 +10,7 @@ import yx.pay.system.domain.User;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public interface LoginLogMapper extends MyMapper<LoginLog> {
 
     /**

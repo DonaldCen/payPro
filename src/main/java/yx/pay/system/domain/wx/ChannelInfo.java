@@ -19,7 +19,7 @@ public class ChannelInfo extends BaseEntity{
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
-    private Integer id;
+    private int id;
     @Column(name = "channel_code")
     private String channelCode;//渠道编码
     @Column(name = "channel_name")

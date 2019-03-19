@@ -25,7 +25,7 @@ public class OrderInfo extends BaseEntity {
     @Id
     @GeneratedValue(generator = "JDBC")
     @Column(name = "id")
-    private Integer id;
+    private int id;
     @Column(name = "create_time")
     private Date createTime;
     @Column(name = "update_time")

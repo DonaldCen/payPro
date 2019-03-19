@@ -26,13 +26,5 @@ public class ProductInfoController extends BaseController {
     @Autowired
     private ProductService productService;
 
-    @PostConstruct
-    private void init(){
-        ProductInfo info = new ProductInfo();
-        info.setName("test");
-        info.setTotalFee(100d);
-        info.setDescription("产品描述");
-        productService.save(info);
-    }
 
 }
