@@ -1,8 +1,5 @@
 server:
   port: 9527
-  servlet:
-    context-path: /sys
-
 
 spring:
   security:

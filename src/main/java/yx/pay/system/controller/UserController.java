@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("user")
+@RequestMapping("/sys/user")
 public class UserController extends BaseController {
 
     private String message;

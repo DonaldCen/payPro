@@ -48,7 +48,7 @@ public class LoginController {
     @Autowired
     private ObjectMapper mapper;
 
-    @PostMapping("/login")
+    @PostMapping("/sys/login")
     @Limit(key = "login", period = 60, count = 20, name = "登录接口", prefix = "limit")
     public FebsResponse login(
             @NotBlank(message = "{required}") String username,

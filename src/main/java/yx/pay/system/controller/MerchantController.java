@@ -34,7 +34,7 @@ import yx.pay.system.service.UserService;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("merchant")
+@RequestMapping("/sys/merchant")
 public class MerchantController extends BaseController {
     @Autowired
     private MerchantService merchantService;

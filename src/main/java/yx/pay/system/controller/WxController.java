@@ -46,7 +46,7 @@ import yx.pay.system.service.WxPayService;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("wx")
+@RequestMapping("/api/wx")
 public class WxController {
     @Autowired
     private WxPayService wxPayService;

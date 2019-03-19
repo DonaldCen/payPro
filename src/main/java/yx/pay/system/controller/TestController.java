@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
-@RequestMapping("test")
+@RequestMapping("/sys/test")
 public class TestController extends BaseController {
 
     private String message;

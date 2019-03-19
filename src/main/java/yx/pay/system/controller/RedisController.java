@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("redis")
+@RequestMapping("/sys/redis")
 public class RedisController {
 
     @Autowired

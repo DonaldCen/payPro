@@ -16,7 +16,7 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("movie")
+@RequestMapping("/sys/movie")
 public class MovieController extends BaseController {
 
     private String message;

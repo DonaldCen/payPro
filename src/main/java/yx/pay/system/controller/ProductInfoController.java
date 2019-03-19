@@ -21,7 +21,7 @@ import yx.pay.system.service.ProductService;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/sys/product")
 public class ProductInfoController extends BaseController {
     @Autowired
     private ProductService productService;

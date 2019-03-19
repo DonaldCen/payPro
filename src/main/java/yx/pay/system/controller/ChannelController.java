@@ -27,7 +27,7 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("channel")
+@RequestMapping("/sys/channel")
 public class ChannelController extends BaseController {
     @Autowired
     private ChannelInfoService channelInfoService;

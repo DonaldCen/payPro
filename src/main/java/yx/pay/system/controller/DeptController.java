@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("dept")
+@RequestMapping("/sys/dept")
 public class DeptController {
 
     private String message;
