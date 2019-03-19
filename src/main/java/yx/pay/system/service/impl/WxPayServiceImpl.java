@@ -46,28 +46,22 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     @Transactional
-    public void generateQrCodeImages(int userId) {
-        OrderInfo info = new OrderInfo();
-        info.setPayType(OrderPayTypeEnum.CREATE_QR_CODE.getIndex());
-        info.setStatus(OrderStatusEnum.CREATE_QR_CODE.getIndex());
-        info.setUserId(userId);
-        //创建验证码状态的订单
-        int orderId = orderInfoService.createOrderInfoByUserId(info);
-        String qrInfo = buildQrInfo(orderId);
-        String url = qrCodeUtil.getQrCodePicName( String.valueOf(userId));
+    public void generateQrCodeImages(int merchantId, int productId) {
+        String qrInfo = buildQrInfo(productId);
+        String url = qrCodeUtil.getQrCodePicName(String.valueOf(merchantId));
         //生成付款二维码图片
-        qrCodeUtil.createQrCode(util.getShortUrl(qrInfo),url);
-        Merchant merchant = new Merchant();
-        merchant.setUserId(userId);
-        merchant.setQrCoreUrl(url);
-        //保存商户付款二维码图片
-        merchantService.updateMerchantQrUrl(merchant);
+        qrCodeUtil.createQrCode(util.getShortUrl(qrInfo), url);
+        Merchant merchant = merchantService.selectByKey(merchantId);
+        if (merchant != null) {
+            merchant.setQrCoreUrl(url);
+            //保存商户付款二维码图片
+            merchantService.updateMerchantQrUrl(merchant);
+        }
+
     }
 
 
-
-
-    private String buildQrInfo(int orderId){
+    private String buildQrInfo(int orderId) {
         SortedMap<Object, Object> packageParams = new TreeMap<>();
         //封装通用参数
         util.commonParams(packageParams);
@@ -78,8 +72,8 @@ public class WxPayServiceImpl implements WxPayService {
         //生成签名
         String sign = util.createSign("UTF-8", packageParams);
         //组装二维码信息
-        String qrInfo = util.buildQrCodeInfo(packageParams,sign);
-        log.info("qrCodeInfo:[{}]",qrInfo);
+        String qrInfo = util.buildQrCodeInfo(packageParams, sign);
+        log.info("qrCodeInfo:[{}]", qrInfo);
 
         return qrInfo;
     }

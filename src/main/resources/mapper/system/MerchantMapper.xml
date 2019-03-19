@@ -19,7 +19,7 @@
         update t_merchant
         set qr_code_url = #{merchant.qrCodeUrl},
             update_time = now()
-        where user_id = #{merchant.userId}
+        where id = #{merchantId}
     </update>
 
     <select id="findMerchantList" resultMap="merchantResultMap">

@@ -1,12 +1,14 @@
 package yx.pay.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import yx.pay.system.domain.wx.PayTypeEnum;
 import yx.pay.system.domain.wx.WxConfig;
 
 /**
@@ -18,6 +20,10 @@ import yx.pay.system.domain.wx.WxConfig;
 @Slf4j
 @Component
 public class WxUtil {
+    private final static String WECHAT_PAY_PREFIX = "WECHAT_";
+    private final static String ALI_PAY_PREFIX = "ALI_";
+    private FastDateFormat dateFormat = FastDateFormat.getInstance("yyyyMMddHHmmssSSS");
+
     // 获取token接口(GET)
     public final static String TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     // oauth2授权接口(GET)
@@ -187,5 +193,21 @@ public class WxUtil {
         String mysign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toLowerCase();
         String tenpaySign = ((String)packageParams.get("sign")).toLowerCase();
         return tenpaySign.equals(mysign);
+    }
+
+    /**
+     * base payType,create order_no
+     * @param payType
+     * @return
+     */
+    public String createOrderNoByPayType(PayTypeEnum payType){
+        StringBuffer sb = new StringBuffer();
+        if(payType.getType() == PayTypeEnum.WECHAT_PAY.getType()){
+            sb.append(WECHAT_PAY_PREFIX);
+        } else if(payType.getType() == PayTypeEnum.ALI_PAY.getType()){
+            sb.append(ALI_PAY_PREFIX);
+        }
+        sb.append(dateFormat.format(new Date()));
+        return sb.toString();
     }
 }

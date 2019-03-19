@@ -33,8 +33,10 @@ import yx.pay.common.utils.QrCodeUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.common.utils.XMLUtil;
 import yx.pay.system.domain.wx.OrderInfo;
+import yx.pay.system.domain.wx.ProductInfo;
 import yx.pay.system.domain.wx.WxConfig;
 import yx.pay.system.service.OrderInfoService;
+import yx.pay.system.service.ProductService;
 import yx.pay.system.service.WxPayService;
 
 /**
@@ -51,17 +53,24 @@ public class WxController {
     @Autowired
     private WxPayService wxPayService;
     @Autowired
+    private ProductService productService;
+    @Autowired
+    private OrderInfoService orderInfoService;
+    @Autowired
     private WxUtil wxUtil;
 
     /**
      * 指定地方，生成url,然后存储，然后展示
-     *
+     * param:
+     *  merchantId: xx
+     *  productId:  xx
      */
     @PostMapping("generateQrCode")
     public FebsResponse generateQrCode(@RequestBody JSONObject jsonParam) {
-        int userId = (Integer) jsonParam.get("userId");
+        int merchantId = (Integer) jsonParam.get("merchantId");
+        int productId = (Integer) jsonParam.get("productId");
         try {
-            wxPayService.generateQrCodeImages(userId);
+            wxPayService.generateQrCodeImages(merchantId,productId);
         } catch (Exception e) {
             log.error("generateQrCode error..", e);
             return new FebsResponse().fail(e.getMessage());
@@ -88,6 +97,8 @@ public class WxController {
             String id = String.valueOf(packageParams.get("product_id"));
             if(StringUtils.isNotBlank(id)){
                 int productId = Integer.parseInt(id);
+                ProductInfo info = productService.selectByKey(productId);
+                orderInfoService.createOrderInfo(info);
             }
         }else{
             log.info("签名错误");

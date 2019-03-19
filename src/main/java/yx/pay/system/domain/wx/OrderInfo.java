@@ -44,5 +44,7 @@ public class OrderInfo extends BaseEntity {
     private Integer status;//状态
     @Column(name = "prepay_id")
     private Integer prepayId;//微信生成的预支付会话标识，用于后续接口调用中使用，该值有效期为2小时
+    @Column(name = "product_id")
+    private Integer productId;
 
 }

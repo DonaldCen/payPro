@@ -1,7 +1,7 @@
 package yx.pay.system.domain.wx;
 
 public enum OrderStatusEnum {
-    CREATE_QR_CODE(1,"生成二维码"),
+    PREPAYMENT(1,"预支付"),
     ;
     private int index;
     private String value;
