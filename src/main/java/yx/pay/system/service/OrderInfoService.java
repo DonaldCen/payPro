@@ -1,8 +1,11 @@
 package yx.pay.system.service;
 
+import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.IService;
 import yx.pay.system.domain.wx.OrderInfo;
 import yx.pay.system.domain.wx.ProductInfo;
+
+import java.util.List;
 
 /**
  * @Description
@@ -19,4 +22,6 @@ public interface OrderInfoService extends IService<OrderInfo> {
      *  3.生成微信支付码
      */
     void createOrderInfo(ProductInfo info);
+
+    List<OrderInfo> findOrderList(QueryRequest request, OrderInfo orderInfo);
 }

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import yx.pay.common.config.MyMapper;
 import yx.pay.system.domain.wx.OrderInfo;
 
+import java.util.List;
+
 /**
  * @Description
  * @Author <a href="mailto:cenyingqiang@wxchina.com">yingqiang.Cen</a>
@@ -14,4 +16,5 @@ import yx.pay.system.domain.wx.OrderInfo;
 @Component
 public interface OrderInfoMapper extends MyMapper<OrderInfo> {
     int createOrderInfoByUserId(OrderInfo info);
+    List<OrderInfo> findOrderList(OrderInfo orderInfo);
 }
