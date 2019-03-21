@@ -11,6 +11,12 @@ public class FebsResponse extends HashMap<String, Object> {
         this.put("msg", "success");
         return this;
     }
+    public FebsResponse success(Object data) {
+        this.put("code", SUCCESS_CODE);
+        this.put("msg", "success");
+        this.put("data",data);
+        return this;
+    }
 
     public FebsResponse fail(String msg) {
         this.put("code", FAIL_CODE);

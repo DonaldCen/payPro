@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yx.pay.system.dao.BankMapper">
+
+    <resultMap id="bankMap" type="yx.pay.system.domain.Bank">
+        <result column="bank_name" jdbcType="VARCHAR" property="value"/>
+    </resultMap>
+
+    <select id="selectByName" resultMap="bankMap">
+        SELECT * from t_bank_info a
+        where a.bank_name LIKE CONCAT('%',#{bankName},'%') and parent_id = #{parentId};
+    </select>
+
+    <select id="getParentBankList" resultMap="bankMap">
+        SELECT * from t_bank_info a
+        where a.parent_id = #{parentId}
+    </select>
+
+</mapper>
