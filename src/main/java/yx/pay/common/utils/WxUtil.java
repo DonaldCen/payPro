@@ -153,7 +153,6 @@ public class WxUtil {
             //封装通用参数
             commonParams(packageParams);
             packageParams.put("long_url",longUrl);
-            packageParams.put("sign_type","MD5");
             //生成签名
             String sign = createSign("UTF-8", packageParams);
             packageParams.put("sign", sign);// 签名

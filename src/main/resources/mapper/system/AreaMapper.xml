@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yx.pay.system.dao.AreaMapper">
+
+    <resultMap id="areaMap" type="yx.pay.system.domain.Area">
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="level" jdbcType="VARCHAR" property="level"/>
+        <result column="order" jdbcType="VARCHAR" property="order"/>
+    </resultMap>
+
+    <select id="selectAllProvince" resultMap="areaMap">
+        select * from t_area a where a.parent_id = #{parentId} order by a.orderBy
+    </select>
+
+
+</mapper>
