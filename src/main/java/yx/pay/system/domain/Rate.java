@@ -24,7 +24,7 @@ public class Rate implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Column(name = "rate")
-    private Double rate;
+    private String rate;
     @Column(name = "create_time")
     private Date createTime;
     @Column(name = "remark")

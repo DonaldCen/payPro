@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import yx.pay.common.annotation.Log;
 import yx.pay.common.controller.BaseController;
+import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.exception.FebsException;
 import yx.pay.system.domain.User;
+import yx.pay.system.domain.vo.MerchantRegisterVo;
 import yx.pay.system.domain.wx.Merchant;
 import yx.pay.system.service.MerchantService;
 import yx.pay.system.service.UploadService;
@@ -85,23 +87,26 @@ public class MerchantController extends BaseController {
     @Log("上传图片")
     @PostMapping("/upload")
     @RequiresPermissions("merchant:uploadFile")
-    public String upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
+    public FebsResponse upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
         log.info("图片大小 {}", multipartFile.getSize());
-        return uploadService.uploadFile(multipartFile);
+        try {
+            String mchId = uploadService.uploadFile(multipartFile);
+            return new FebsResponse().success(mchId);
+        } catch (Exception e) {
+            log.error("upload error..",e);
+        }
+        return new FebsResponse().fail("upload fail..");
     }
 
     /**
      * 商户入驻申请
      *
-     * @param multipartFile
-     * @return
      */
     @Log("商户入驻申请")
     @PostMapping("/merchantApply")
     @RequiresPermissions("merchant:apply")
-    public String merchantApply(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
-        log.info("图片大小 {}", multipartFile.getSize());
-        return uploadService.uploadFile(multipartFile);
+    public String merchantApply(MerchantRegisterVo vo) throws FebsException{
+        return null;
     }
 
 }
