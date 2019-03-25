@@ -71,8 +71,10 @@ public class WxPayServiceImpl implements WxPayService {
 
         //生成签名
         String sign = util.createSign("UTF-8", packageParams);
+
         //组装二维码信息
         String qrInfo = util.buildQrCodeInfo(packageParams, sign);
+
         log.info("qrCodeInfo:[{}]", qrInfo);
 
         return qrInfo;

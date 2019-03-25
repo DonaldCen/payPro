@@ -21,7 +21,7 @@ import lombok.Data;
 public class Rate implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
-    @Column(name = "MENU_ID")
+    @Column(name = "id")
     private Integer id;
     @Column(name = "rate")
     private Double rate;

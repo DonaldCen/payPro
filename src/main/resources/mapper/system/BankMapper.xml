@@ -3,12 +3,21 @@
 <mapper namespace="yx.pay.system.dao.BankMapper">
 
     <resultMap id="bankMap" type="yx.pay.system.domain.Bank">
-        <result column="bank_name" jdbcType="VARCHAR" property="value"/>
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="bank_name" jdbcType="VARCHAR" property="bankName"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
     </resultMap>
 
     <select id="selectByName" resultMap="bankMap">
         SELECT * from t_bank_info a
-        where a.bank_name LIKE CONCAT('%',#{bankName},'%') and parent_id = #{parentId};
+        where 1=1
+        <if test="bankName != null and bankName != ''">
+            and a.bank_name LIKE CONCAT('%',#{bankName},'%')
+        </if>
+        <if test="parentId != null ">
+            and parent_id = #{parentId}
+        </if>
+        limit 50
     </select>
 
     <select id="getParentBankList" resultMap="bankMap">

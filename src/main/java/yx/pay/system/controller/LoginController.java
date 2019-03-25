@@ -85,7 +85,7 @@ public class LoginController {
         return new FebsResponse().message("认证成功").data(userInfo);
     }
 
-    @GetMapping("index/{username}")
+    @GetMapping("/sys/index/{username}")
     public FebsResponse index(@NotBlank(message = "{required}") @PathVariable String username) {
         Map<String, Object> data = new HashMap<>();
         // 获取系统访问记录
@@ -106,7 +106,7 @@ public class LoginController {
     }
 
     @RequiresPermissions("user:online")
-    @GetMapping("online")
+    @GetMapping("/sys/online")
     public FebsResponse userOnline(String username) throws Exception {
         String now = DateUtil.formatFullTime(LocalDateTime.now());
         Set<String> userOnlineStringSet = redisService.zrangeByScore(FebsConstant.ACTIVE_USERS_ZSET_PREFIX, now, "+inf");
@@ -124,7 +124,7 @@ public class LoginController {
         return new FebsResponse().data(activeUsers);
     }
 
-    @DeleteMapping("kickout/{id}")
+    @DeleteMapping("/sys/kickout/{id}")
     @RequiresPermissions("user:kickout")
     public void kickout(@NotBlank(message = "{required}") @PathVariable String id) throws Exception {
         String now = DateUtil.formatFullTime(LocalDateTime.now());
@@ -146,7 +146,7 @@ public class LoginController {
         }
     }
 
-    @GetMapping("logout/{id}")
+    @GetMapping("/sys/logout/{id}")
     public void logout(@NotBlank(message = "{required}") @PathVariable String id) throws Exception {
         this.kickout(id);
     }
