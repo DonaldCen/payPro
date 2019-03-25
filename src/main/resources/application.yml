@@ -75,13 +75,12 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/api/wx/**
+    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**
     # token有效期，单位秒
     jwtTimeOut: 3600
 
 wx:
   appId: wx62eb98733173fa88
   appSecret: 7c91fbeb099af0f90d76c2a76051586c
-  # 两个 1522513161 1402784402
-  mchId: 1522513161
+  mchId: 7c91fbeb099af0f90d76c2a76051586c
   qrCodeUrl: E:\\
