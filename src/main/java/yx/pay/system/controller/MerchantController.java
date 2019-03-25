@@ -3,12 +3,7 @@ package yx.pay.system.controller;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -16,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import yx.pay.common.annotation.Log;
 import yx.pay.common.controller.BaseController;
 import yx.pay.common.domain.QueryRequest;
@@ -23,6 +19,7 @@ import yx.pay.common.exception.FebsException;
 import yx.pay.system.domain.User;
 import yx.pay.system.domain.wx.Merchant;
 import yx.pay.system.service.MerchantService;
+import yx.pay.system.service.UploadService;
 import yx.pay.system.service.UserService;
 
 /**
@@ -40,6 +37,8 @@ public class MerchantController extends BaseController {
     private MerchantService merchantService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UploadService uploadService;//图片上传服务
 
     @GetMapping
     @RequiresPermissions("merchant:view")
@@ -76,6 +75,33 @@ public class MerchantController extends BaseController {
             log.error(message, e);
             throw new FebsException(message);
         }
+    }
+     /**
+     * 上传小微商户图片,获取上传图片的media_id(如上传成功)
+     *
+     * @param multipartFile
+     * @return
+      */
+    @Log("上传图片")
+    @PostMapping("/upload")
+    @RequiresPermissions("merchant:uploadFile")
+    public String upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
+        log.info("图片大小 {}", multipartFile.getSize());
+        return uploadService.uploadFile(multipartFile);
+    }
+
+    /**
+     * 商户入驻申请
+     *
+     * @param multipartFile
+     * @return
+     */
+    @Log("商户入驻申请")
+    @PostMapping("/merchantApply")
+    @RequiresPermissions("merchant:apply")
+    public String merchantApply(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
+        log.info("图片大小 {}", multipartFile.getSize());
+        return uploadService.uploadFile(multipartFile);
     }
 
 }

@@ -5,6 +5,7 @@ import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.exception.FebsException;
 import yx.pay.system.domain.Test;
+import yx.pay.system.service.CertFicatesService;
 import yx.pay.system.service.TestService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +35,18 @@ public class TestController extends BaseController {
 
     @Autowired
     private TestService testService;
+    @Autowired
+    public CertFicatesService certFicatesService;
+
+
+    @PostConstruct
+    public void init(){
+
+        //certFicatesService.getCertFicates();
+    }
+
+
+
 
     @GetMapping
     public Map<String, Object> findTests(QueryRequest request) {
