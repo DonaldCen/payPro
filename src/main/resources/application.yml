@@ -31,7 +31,7 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    password: KeYpZrZx
+    password:
     jedis:
       pool:
         min-idle: 8
@@ -84,3 +84,7 @@ wx:
   appSecret: 7c91fbeb099af0f90d76c2a76051586c
   mchId: 7c91fbeb099af0f90d76c2a76051586c
   qrCodeUrl: E:\\
+merchant:
+  merchantId: 1402784402
+  apiKey: 7c91yxeb099af0f90d76c2a76051586c
+  certPath: D:\abc\1402784402_20190321_cert\apiclient_cert.pem
