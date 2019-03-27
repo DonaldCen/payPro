@@ -22,6 +22,8 @@ public interface MerchantService extends IService<Merchant> {
 
     void updateMerchant(@Valid Merchant merchant);
 
+
+
     /**
      * 商户入驻申请, 返回 商户申请单号
      * @param request

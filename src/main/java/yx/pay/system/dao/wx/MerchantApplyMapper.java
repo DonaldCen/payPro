@@ -16,4 +16,6 @@ public interface MerchantApplyMapper extends MyMapper<MerchantApply> {
     MerchantApply findByName(String businessCode);
     void addMerchantApply(MerchantApply merchantApply);
     void updateMerchantApply(MerchantApply merchantApply);
+    int updateSubMchIdAndStatus(MerchantApply merchantApply);
+    int updateStatus(MerchantApply merchantApply);
 }

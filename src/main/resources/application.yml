@@ -75,7 +75,7 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**
+    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**
     # token有效期，单位秒
     jwtTimeOut: 3600
 
@@ -87,4 +87,5 @@ wx:
 merchant:
   merchantId: 1402784402
   apiKey: 7c91yxeb099af0f90d76c2a76051586c
-  certPath: D:\abc\1402784402_20190321_cert\apiclient_cert.pem
+#  certPath: D:\abc\1402784402_20190321_cert\apiclient_cert.pem
+  certPath: /Users/jiangpei/git/payPro/cert/apiclient_cert.p12

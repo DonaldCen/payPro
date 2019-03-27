@@ -120,5 +120,14 @@
         where id = #{channelInfo.id}
     </update>
 -->
-
+    <update id="updateSubMchIdAndStatus" parameterType="yx.pay.system.domain.wx.MerchantApply">
+        UPDATE t_merchant_apply
+        set sub_mch_id = #{subMchId}, status = #{status}
+        where applyment_id = #{applymentID}
+    </update>
+    <update id="updateStatus" parameterType="yx.pay.system.domain.wx.MerchantApply">
+        UPDATE t_merchant_apply
+        set status = #{status}
+        where applyment_id = #{applymentID}
+    </update>
 </mapper>

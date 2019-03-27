@@ -102,6 +102,10 @@ public class MerchantApply extends BaseEntity {
     private String updateDate;//38、更新日期
 
 
+    @Column(name = "sub_mch_id")
+    private String subMchId;//39、小微商户id
 
+    @Column(name = "status")
+    private String status;//40、申请状态
 
 }
