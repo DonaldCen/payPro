@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yx.pay.system.dao.wx.MerchantApplyMapper">
+    <resultMap id="MerchantApplyResultMap" type="yx.pay.system.domain.wx.MerchantApply">
+        <id column="id"                         jdbcType="INTEGER" property="id"/>
+        <result column="update_date"            jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="apply_date"             jdbcType="TIMESTAMP" property="applyDate"/>
+        <result column="create_date"            jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="applyment_id"           jdbcType="VARCHAR" property="applymentID"/>
+        <result column="contact_email"          jdbcType="VARCHAR" property="contactEmail"/>
+        <result column="contact_phone"          jdbcType="VARCHAR" property="contactPhone"/>
+        <result column="contact"                jdbcType="VARCHAR" property="contact"/>
+        <result column="business_addition_pics" jdbcType="VARCHAR" property="businessAdditionPics"/>
+        <result column="business_addition_desc" jdbcType="VARCHAR" property="businessAdditionDesc"/>
+        <result column="rate"                   jdbcType="VARCHAR" property="rate"/>
+        <result column="product_desc"           jdbcType="VARCHAR" property="productDesc"/>
+        <result column="service_phone"          jdbcType="VARCHAR" property="servicePhone"/>
+        <result column="merchant_shortname"     jdbcType="VARCHAR" property="merchantShortName"/>
+        <result column="address_certification"  jdbcType="VARCHAR" property="addressCertification"/>
+        <result column="indoor_pic"             jdbcType="VARCHAR" property="indoorPic"/>
+        <result column="store_entrance_pic"     jdbcType="VARCHAR" property="storeEntrancePic"/>
+        <result column="store_latitude"         jdbcType="VARCHAR" property="storeLatitude"/>
+        <result column="store_longitude"        jdbcType="VARCHAR" property="storeLogitude"/>
+        <result column="store_street"           jdbcType="VARCHAR" property="storeStreet"/>
+        <result column="store_address_code"     jdbcType="VARCHAR" property="storeAddressCode"/>
+        <result column="store_name"             jdbcType="VARCHAR" property="storeName"/>
+        <result column="account_number"         jdbcType="VARCHAR" property="accountNumber"/>
+        <result column="bank_name"              jdbcType="VARCHAR" property="bankName"/>
+        <result column="bank_address_code"      jdbcType="VARCHAR" property="bankAddressCode"/>
+        <result column="account_bank"           jdbcType="VARCHAR" property="accountBank"/>
+        <result column="account_name"           jdbcType="VARCHAR" property="accountName"/>
+        <result column="id_card_valid_time"     jdbcType="VARCHAR" property="idCardValidTime"/>
+        <result column="id_card_number"         jdbcType="VARCHAR" property="idCardNumber"/>
+        <result column="id_card_name"           jdbcType="VARCHAR" property="idCardName"/>
+        <result column="id_card_nationa"        jdbcType="VARCHAR" property="idCardNationa"/>
+        <result column="id_card_copy"           jdbcType="VARCHAR" property="idCardCopy"/>
+        <result column="business_code"          jdbcType="VARCHAR" property="businessCode"/>
+        <result column="sign"                   jdbcType="VARCHAR" property="sign"/>
+        <result column="sign_type"              jdbcType="VARCHAR" property="signType"/>
+        <result column="nonce_str"              jdbcType="VARCHAR" property="nonceStr"/>
+        <result column="mch_id"                 jdbcType="VARCHAR" property="mchID"/>
+        <result column="cert_sn"                jdbcType="VARCHAR" property="certSN"/>
+        <result column="version"                jdbcType="VARCHAR" property="version"/>
+
+    </resultMap>
+<!--
+    <select id="findChannelList" resultMap="MerchantApplyResultMap">
+        SELECT * from t_channel t
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="MerchantApplyResultMap">
+        SELECT * from t_channel t where t.channel_name = #{channelName}
+    </select>
+-->
+    <insert id="addMerchantApply" parameterType="yx.pay.system.domain.wx.MerchantApply">
+        <!--
+            keyProperty：将查询出的主键设置到parameterType中的哪个属性上
+            order：相对于sql语句的执行顺序
+            resultType：指定返回值类型
+            LAST_INSERT_ID()：获取ID函数
+        -->
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+        SELECT LAST_INSERT_ID()
+    </selectKey>
+        INSERT INTO MerchantApply(
+        version,cert_sn,mch_id,nonce_str,sign_type,sign,business_code,id_card_copy,id_card_nationa,id_card_name,id_card_number,id_card_valid_time
+        ,account_name,account_bank,bank_address_code,bank_name,account_number,store_name,store_address_code,store_street,store_longitude,store_latitude,store_entrance_pic,
+        indoor_pic,address_certification,merchant_shortname,service_phone,product_desc,rate,business_addition_desc,business_addition_pics,
+        contact,contact_phone,contract_email,create_date,apply_date,update_date)
+        values(
+        #{version, jdbcType=VARCHAR},
+        #{certSN, jdbcType=VARCHAR},
+        #{nonceStr, jdbcType=VARCHAR},
+        #{signType, jdbcType=VARCHAR},
+        #{sign, jdbcType=VARCHAR},
+        #{businessCode, jdbcType=VARCHAR},
+        #{idCardCopy, jdbcType=VARCHAR},
+        #{idCardNationa, jdbcType=VARCHAR},
+        #{idCardName, jdbcType=VARCHAR},
+        #{idCardNumber, jdbcType=VARCHAR},
+        #{idCardValidTime, jdbcType=VARCHAR},
+        #{accountName, jdbcType=VARCHAR},
+        #{accountBank, jdbcType=VARCHAR},
+        #{bankAddressCode, jdbcType=VARCHAR},
+        #{bankName, jdbcType=VARCHAR},
+        #{accountNumber, jdbcType=VARCHAR},
+        #{storeName, jdbcType=VARCHAR},
+        #{storeAddressCode, jdbcType=VARCHAR},
+        #{storeStreet, jdbcType=VARCHAR},
+        #{storeLogitude, jdbcType=VARCHAR},
+        #{storeLatitude, jdbcType=VARCHAR},
+        #{storeEntrancePic, jdbcType=VARCHAR},
+        #{indoorPic, jdbcType=VARCHAR},
+        #{addressCertification, jdbcType=VARCHAR},
+        #{merchantshortName, jdbcType=VARCHAR},
+        #{servicePhone, jdbcType=VARCHAR},
+        #{productDesc, jdbcType=VARCHAR},
+        #{rate, jdbcType=VARCHAR},
+        #{businessAdditionDesc, jdbcType=VARCHAR},
+        #{businessAdditionPics, jdbcType=VARCHAR},
+        #{contact, jdbcType=VARCHAR},
+        #{contactPhone, jdbcType=VARCHAR},
+        #{contactEmail, jdbcType=VARCHAR},
+        #{applymentID, jdbcType=VARCHAR},
+        sysdate(),sysdate(),sysdate()
+        )
+    </insert>
+<!--
+    <update id="updateChannelInfo" parameterType="yx.pay.system.domain.wx.MerchantApply">
+        UPDATE t_channel
+        set channel_code = #{channelInfo.channelCode},
+        channel_name = #{channelInfo.channelName},
+        trade_type = #{channelInfo.tradeType},
+        channel_cost_rate = #{channelInfo.channelCostRate},
+        channel_cost = #{channelInfo.channelCost},
+        settlement_type = #{channelInfo.settlementType},
+        status = #{channelInfo.status},
+        pay_limit = #{channelInfo.payLimit},
+        update_time = NOW()
+        where id = #{channelInfo.id}
+    </update>
+-->
+
+</mapper>
