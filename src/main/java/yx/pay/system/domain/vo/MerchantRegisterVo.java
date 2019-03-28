@@ -91,6 +91,30 @@ public class MerchantRegisterVo {
      * 手机号码
      */
     private String contact_phone;
+    /**
+     * 银行ID
+     */
+    private Integer bankId;
+    /**
+     * 费率ID
+     */
+    private Integer rateId;
+
+    public Integer getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(Integer bankId) {
+        this.bankId = bankId;
+    }
+
+    public Integer getRateId() {
+        return rateId;
+    }
+
+    public void setRateId(Integer rateId) {
+        this.rateId = rateId;
+    }
 
     public String getBusiness_code() {
         return business_code;
