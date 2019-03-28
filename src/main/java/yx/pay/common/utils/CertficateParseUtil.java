@@ -17,8 +17,39 @@ public class CertficateParseUtil {
     public String associated_data;
     public String ciphertext;//密文
 
+    public String getSerial_no() {
+        return serial_no;
+    }
 
-public void  certificateParse(String certificate){
+    public String getEffective_time() {
+        return effective_time;
+    }
+
+    public String getExpire_time() {
+        return expire_time;
+    }
+
+    public JSONArray getCertificateJsonDataArray() {
+        return certificateJsonDataArray;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public String getNonce() {
+        return nonce;
+    }
+
+    public String getAssociated_data() {
+        return associated_data;
+    }
+
+    public String getCiphertext() {
+        return ciphertext;
+    }
+
+    public void  certificateParse(String certificate){
     //获取Data对象
     try{
         JSONObject jsonObj = JSON.parseObject(certificate);
@@ -36,27 +67,27 @@ public void  certificateParse(String certificate){
                 expire_time=jo.getString("expire_time");
             }
             if(jo.containsKey("encrypt_certificate")){
-                certificateJsonDataArray=jo.getJSONArray("encrypt_certificate");
-                for(int j=0;j<certificateJsonDataArray.size();j++){
-                    JSONObject tempJsonObject=certificateJsonDataArray.getJSONObject(j);
+                JSONObject  tempJsonObject=jo.getJSONObject("encrypt_certificate");
                     if(tempJsonObject.containsKey("algorithm")){
-                        algorithm=jo.getString("algorithm");
+                        algorithm=tempJsonObject.getString("algorithm");
                     }
                     if(tempJsonObject.containsKey("nonce")){
-                        nonce=jo.getString("nonce");
+                        nonce=tempJsonObject.getString("nonce");
                     }
                     if(tempJsonObject.containsKey("associated_data")){
-                        associated_data=jo.getString("associated_data");
+                        associated_data=tempJsonObject.getString("associated_data");
                     }
                     if(tempJsonObject.containsKey("ciphertext")){
-                        ciphertext=jo.getString("ciphertext");
+                        ciphertext=tempJsonObject.getString("ciphertext");
                     }
-                }
+
             }
         }
     }catch(Exception e){
 
     }
+
+
 
 }
 
