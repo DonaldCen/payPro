@@ -51,19 +51,14 @@ public class CertFicatesServiceImpl implements CertFicatesService {
         //随机串
         param.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
         // 暂只支持HMAC-SHA256 加密
-//        param.put("sign_type", "HMAC-SHA256");
-        param.put("sign_type", SignType.MD5.name());
-//        param.put("sign_type",SignType.HMACSHA256.name());
+        param.put("sign_type", "HMAC-SHA256");
         // 对你的参数进行加密处理
         //param.put("sign", SignUtil.wechatCertficatesSignBySHA256(param, "API密钥(mch_key)" ));
         try {
-//            String signStr = WXPayUtil.generateSignature(param, merchantServerConfig.getApiKey(), SignType.HMACSHA256);
-            String signStr = WXPayUtil.generateSignature(param, merchantServerConfig.getApiKey(), SignType.MD5);
-           // param.put("sign", SignUtil.wechatCertficatesSignBySHA256(param, merchantServerConfig.getApiKey() ));
+            String signStr = WXPayUtil.generateSignature(param, merchantServerConfig.getApiKey(), SignType.HMACSHA256);
             param.put("sign",signStr);
             log.info("签名"+signStr);
-//            String xmlData=WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey(),SignType.HMACSHA256);
-            String xmlData=WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey(),SignType.MD5);
+            String xmlData=WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey(),SignType.HMACSHA256);
             log.info("xml 格式串 {}",xmlData);
             boolean flag=WXPayUtil.isSignatureValid(xmlData,merchantServerConfig.getApiKey());
             log.info("签名验证标识"+flag);
