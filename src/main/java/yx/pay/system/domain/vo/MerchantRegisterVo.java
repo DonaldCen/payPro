@@ -60,6 +60,14 @@ public class MerchantRegisterVo {
      */
     private String store_street;
     /**
+     * 门店经度
+     */
+    private String store_longitude;
+    /**
+     * 门店纬度
+     */
+    private String store_latitude;
+    /**
      * 门店门口照片 media_id
      */
     private String store_entrance_pic;
@@ -67,6 +75,12 @@ public class MerchantRegisterVo {
      * 店内环境照片 media_id
      */
     private String indoor_pic;
+    /**
+     * 经营场地证明
+     */
+    private String address_certification;
+    private String business_addition_desc;
+    private String business_addition_pics;
     /**
      * 商户简称
      */
@@ -99,6 +113,8 @@ public class MerchantRegisterVo {
      * 费率ID
      */
     private Integer rateId;
+
+    private String contact_email;
 
     public Integer getBankId() {
         return bankId;
@@ -290,5 +306,53 @@ public class MerchantRegisterVo {
 
     public void setContact_phone(String contact_phone) {
         this.contact_phone = contact_phone;
+    }
+
+    public String getStore_longitude() {
+        return store_longitude;
+    }
+
+    public void setStore_longitude(String store_longitude) {
+        this.store_longitude = store_longitude;
+    }
+
+    public String getStore_latitude() {
+        return store_latitude;
+    }
+
+    public void setStore_latitude(String store_latitude) {
+        this.store_latitude = store_latitude;
+    }
+
+    public String getAddress_certification() {
+        return address_certification;
+    }
+
+    public void setAddress_certification(String address_certification) {
+        this.address_certification = address_certification;
+    }
+
+    public String getBusiness_addition_desc() {
+        return business_addition_desc;
+    }
+
+    public void setBusiness_addition_desc(String business_addition_desc) {
+        this.business_addition_desc = business_addition_desc;
+    }
+
+    public String getBusiness_addition_pics() {
+        return business_addition_pics;
+    }
+
+    public void setBusiness_addition_pics(String business_addition_pics) {
+        this.business_addition_pics = business_addition_pics;
+    }
+
+    public String getContact_email() {
+        return contact_email;
+    }
+
+    public void setContact_email(String contact_email) {
+        this.contact_email = contact_email;
     }
 }
