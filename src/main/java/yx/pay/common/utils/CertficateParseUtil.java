@@ -49,6 +49,20 @@ public class CertficateParseUtil {
         return ciphertext;
     }
 
+    @Override
+    public String toString() {
+        return "CertficateParseUtil{" +
+                "serial_no='" + serial_no + '\'' +
+                ", effective_time='" + effective_time + '\'' +
+                ", expire_time='" + expire_time + '\'' +
+                ", certificateJsonDataArray=" + certificateJsonDataArray +
+                ", algorithm='" + algorithm + '\'' +
+                ", nonce='" + nonce + '\'' +
+                ", associated_data='" + associated_data + '\'' +
+                ", ciphertext='" + ciphertext + '\'' +
+                '}';
+    }
+
     public void  certificateParse(String certificate){
     //获取Data对象
     try{
