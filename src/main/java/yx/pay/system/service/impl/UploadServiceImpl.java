@@ -3,6 +3,7 @@ package yx.pay.system.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import yx.pay.common.domain.FebsResponse;
 import yx.pay.system.domain.wx.MerchantServerConfig;
 import yx.pay.system.service.UploadService;
 
@@ -46,7 +47,7 @@ public class UploadServiceImpl implements UploadService{
      * @return
      */
     @Override
-    public String uploadFile(MultipartFile multipartFile) {
+    public FebsResponse uploadFile(MultipartFile multipartFile) {
         HttpPost httpPost = new HttpPost("https://api.mch.weixin.qq.com/secapi/mch/uploadmedia");
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.MULTIPART_FORM_DATA.getMimeType());
         CloseableHttpClient client = null;
@@ -64,6 +65,7 @@ public class UploadServiceImpl implements UploadService{
             // 用uuid作为文件名，防止生成的临时文件重复
             excelFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg");
             multipartFile.transferTo(excelFile);
+            // RequestBody.create(MediaType.parse("application/octet-stream")
             FileBody bin = new FileBody(excelFile, ContentType.create("image/jpg", Consts.UTF_8));
             HttpEntity build = MultipartEntityBuilder.create().setCharset(Charset.forName("utf-8"))
                     .addTextBody("media_hash", hash)
@@ -78,14 +80,23 @@ public class UploadServiceImpl implements UploadService{
                 String responseEntity = EntityUtils.toString(httpResponse.getEntity());
                 log.info("upload response {}", responseEntity);
                 Document document = DocumentHelper.parseText(responseEntity);
-                if ("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue())) {
+                if ("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue()) ) {
+                    if ("FAIL".equalsIgnoreCase(document.selectSingleNode("//result_code").getStringValue())){
+                        // 错误Code集合
+                        //String[] error_code=new String[]{"NVALID_REQUEST","INVALID_REQUEST","SIGNERROR","INVALID_REQUEST","PARAM_ERROR","PARAM_ERROR","PARAM_ERROR","INVALID_REQUEST","FREQUENCY_LIMITED","SYSTEMERROR"};
+                      return new FebsResponse().fail(document.selectSingleNode("//err_code").getStringValue());
+                    }
                     if ("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//result_code").getStringValue())) {
-                        return document.selectSingleNode("//media_id").getStringValue();
+                        return new FebsResponse().success(document.selectSingleNode("//media_id").getStringValue());
                     }
                 }
-                log.error("上传图片失败，异常信息 code ={} des = {}", document.selectSingleNode("//err_code").getStringValue(), document.selectSingleNode("//err_code_de").getStringValue());
-                error = document.selectSingleNode("//err_code_de").getStringValue();
+                if ("FAIL".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue())){
+                    return  new FebsResponse().fail(document.selectSingleNode("//return_msg").getStringValue());
+                }
+               // log.error("上传图片失败，异常信息 code ={} des = {}", document.selectSingleNode("//err_code").getStringValue(), document.selectSingleNode("//err_code_de").getStringValue());
+               // error = document.selectSingleNode("//err_code").getStringValue();
             }
+
         } catch (Exception e) {
             log.error("微信图片上传异常 ， e={}", e);
         } finally {
@@ -100,7 +111,7 @@ public class UploadServiceImpl implements UploadService{
                 deleteFile(excelFile);
             }
         }
-        return error;
+        return new FebsResponse().fail("异常错误！");
     }
     /**
      * 删除临时文件
