@@ -23,6 +23,7 @@ import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.impl.BaseService;
 import yx.pay.common.utils.CertficateParseUtil;
+import yx.pay.common.utils.EncryptionUtils;
 import yx.pay.system.dao.BankMapper;
 import yx.pay.system.dao.RateMapper;
 import yx.pay.system.dao.wx.MerchantApplyMapper;
@@ -191,8 +192,17 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         //解析证书，获取证书序列号
         CertficateParseUtil cu=new CertficateParseUtil();
         cu.certificateParse(certFicates);
+
+        String original ="";
+        try {
+            original=certFicatesService.decryptCertSN(cu.getAssociated_data(), cu.getNonce(), cu.getCiphertext(), merchantServerConfig.getApiv3Key());
+        }catch (Exception e){
+            log.info(" 解析证书原文错误 "+e.getMessage());
+        }
+
         String version ="3.0";//接口版本号
         String cert_sn=cu.getSerial_no();// 待处理 平台证书序列号
+
         String mch_id=merchantServerConfig.getMerchantId();//商户ID
         String nonce_str= UUID.randomUUID().toString().replace("-", "");//
         String sign_type="HMAC-SHA256";//签名类型
@@ -276,25 +286,27 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
 
         // 加密参数，不需要保存到数据库中，但需要加密提交给微信接口
         try {
+           // String encrypt = EncryptionUtils.rsaEncryptByCert("我的身份证",original);
             String id_card_name_pwd = vo.getId_card_name();//身份证姓名 (加密)
             paramDB.put("id_card_name",id_card_name_pwd);
-            id_card_name = certFicatesService.encryptPkcs1padding(id_card_name_pwd);
+            id_card_name =EncryptionUtils.rsaEncryptByCert(id_card_name_pwd,original);// certFicatesService.encryptPkcs1padding(id_card_name_pwd);
             String id_card_number_pwd=vo.getId_card_number();//身份证号码 (加密)
             paramDB.put("id_card_number",id_card_number_pwd);
-            id_card_number = certFicatesService.encryptPkcs1padding(id_card_number_pwd);
+            id_card_number =EncryptionUtils.rsaEncryptByCert(id_card_number_pwd,original) ;//certFicatesService.encryptPkcs1padding(id_card_number_pwd);
             String account_name_pwd=vo.getAccount_name();//开户名称 (加密)
             paramDB.put("account_name",account_name_pwd);
-            account_name = certFicatesService.encryptPkcs1padding(account_name_pwd);
+            account_name = EncryptionUtils.rsaEncryptByCert(account_name_pwd, original);//certFicatesService.encryptPkcs1padding(account_name_pwd);
             String contact_pwd=vo.getContact();//联系人姓名
             paramDB.put("contact",contact_pwd);
-            contact = certFicatesService.encryptPkcs1padding(contact_pwd);
+            contact = EncryptionUtils.rsaEncryptByCert(contact_pwd, original);//certFicatesService.encryptPkcs1padding(contact_pwd);
             String contact_phone_pwd = vo.getContact_phone();//手机号码 (加密)
             paramDB.put("contact_phone",contact_phone_pwd);
-            contact_phone=certFicatesService.encryptPkcs1padding(contact_phone_pwd);
+            contact_phone=EncryptionUtils.rsaEncryptByCert(contact_phone_pwd, original);//certFicatesService.encryptPkcs1padding(contact_phone_pwd);
             String contact_email_pwd = vo.getContact_email();//联系邮箱 (加密)
             paramDB.put("contact_email",contact_email_pwd);
-            if(null!=contact_email_pwd)
-                contact_email=certFicatesService.encryptPkcs1padding(contact_email_pwd);
+            if(null!=contact_email_pwd) {
+                contact_email = EncryptionUtils.rsaEncryptByCert(contact_email_pwd, original);//certFicatesService.encryptPkcs1padding(contact_email_pwd);
+            }
 
         }catch (Exception e){
             log.info("加密失败 {}",e.getMessage());
