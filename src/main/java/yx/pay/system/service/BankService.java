@@ -12,8 +12,6 @@ import yx.pay.system.domain.Bank;
  * @Version 1.0.0
  */
 public interface BankService extends IService<Bank> {
-
     List<Bank> selectByName(String name, int parentId);
-
     List<Bank> getParentBankList(int i);
 }
