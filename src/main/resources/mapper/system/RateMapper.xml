@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yx.pay.system.dao.RateMapper">
+    <resultMap id="rateMap" type="yx.pay.system.domain.Rate">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rate" jdbcType="VARCHAR" property="rate"/>
+    </resultMap>
+<!--
+    <select id="selectAll" resultMap="rateMap">
+        SELECT * from t_rate a
+    </select>
+    -->
+    <select id="selectByKey"  parameterType="yx.pay.system.domain.Rate"  resultMap="rateMap">
+        select * from t_rate where id=#{id}
+    </select>
+
+</mapper>
