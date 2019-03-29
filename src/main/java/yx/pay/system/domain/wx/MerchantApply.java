@@ -108,4 +108,13 @@ public class MerchantApply extends BaseEntity {
     @Column(name = "status")
     private String status;//40、申请状态
 
+    @Column(name="bank_id")
+    private String bank_id;//41、银行ID
+    @Column(name="rate_id")
+    private String rate_id;//42、费率ID
+    @Column(name="data_status")
+    private String data_status;//43、数据状态{0 :生效 1：失效}
+
+
+
 }
