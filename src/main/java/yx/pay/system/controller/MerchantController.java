@@ -85,14 +85,15 @@ public class MerchantController extends BaseController {
             throw new FebsException(message);
         }
     }
-     /**
+    /**
      * 上传小微商户图片,获取上传图片的media_id(如上传成功)
      *
      * @param multipartFile
      * @return
-      */
+     */
     @Log("上传图片")
     @PostMapping("/upload")
+    @RequiresPermissions("merchant:uploadFile")
     public FebsResponse upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
         log.info("图片大小 {}", multipartFile.getSize());
         try {
@@ -110,8 +111,8 @@ public class MerchantController extends BaseController {
     @Log("商户入驻申请")
     @PostMapping("/merchantApply")
     @RequiresPermissions("merchant:apply")
-    public String merchantApply(MerchantRegisterVo vo) throws FebsException{
-        return null;
+    public FebsResponse merchantApply(MerchantRegisterVo vo) throws FebsException{
+        return merchantService.merchantApply(vo);
     }
 
 }
