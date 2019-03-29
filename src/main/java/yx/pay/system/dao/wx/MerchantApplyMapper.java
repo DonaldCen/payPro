@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 public interface MerchantApplyMapper extends MyMapper<MerchantApply> {
-    List<MerchantApply> findChannelList(MerchantApply merchantApply);
+    List<MerchantApply> findMerchantApplyList();
     MerchantApply findByName(String businessCode);
     /**
      * 新增商户入驻申请参数
