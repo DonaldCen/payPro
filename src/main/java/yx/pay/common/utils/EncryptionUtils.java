@@ -52,13 +52,13 @@ public class EncryptionUtils {
      * @return
      * @throws Exception
      */
-    /*
+
     public static String rsaEncryptByCert(String Content, String certStr) throws Exception {
         X509Certificate certificate = X509Certificate.getInstance(certStr.getBytes());
         PublicKey publicKey = certificate.getPublicKey();
         return encodeBase64(encryptPkcs1padding(publicKey, Content.getBytes(CHAR_ENCODING)));
     }
-    */
+
     /**
      * 根据pem公钥路径获取公钥字符串
      *
