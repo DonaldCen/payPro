@@ -1,5 +1,4 @@
 package yx.pay.system.service.impl;
-
 import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -16,21 +15,26 @@ import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import javax.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
 import yx.pay.common.domain.FebsConstant;
+import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.impl.BaseService;
+import yx.pay.common.utils.CertficateParseUtil;
+import yx.pay.system.dao.BankMapper;
+import yx.pay.system.dao.RateMapper;
+import yx.pay.system.dao.wx.MerchantApplyMapper;
 import yx.pay.system.dao.wx.MerchantMapper;
+import yx.pay.system.domain.Rate;
+import yx.pay.system.domain.vo.MerchantRegisterVo;
 import yx.pay.system.domain.wx.Merchant;
-
 import yx.pay.system.domain.wx.MerchantServerConfig;
+import yx.pay.system.service.BankService;
+import yx.pay.system.service.CertFicatesService;
 import yx.pay.system.service.MerchantService;
+import yx.pay.system.service.RateService;
 
 @Slf4j
 @Service
@@ -38,7 +42,16 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
     @Autowired
     private MerchantMapper merchantMapper;
     @Autowired
-    public MerchantServerConfig merchantServerConfig;
+    private BankService bankService;
+    @Autowired
+    private RateService rateService;
+    @Autowired
+    private MerchantServerConfig merchantServerConfig;
+
+    @Autowired
+    private CertFicatesService certFicatesService;
+    @Autowired
+    private MerchantApplyMapper merchantApplyMapper;
     @Override
     public void updateMerchantQrUrl(Merchant merchant) {
         merchantMapper.updateMerchantQrUrl(merchant);
@@ -76,19 +89,25 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         this.merchantMapper.updateMerchant(merchant);
     }
 
-
-    public String MerchantApply(QueryRequest request, Map<String,String> paramMap){
+    /**
+     * 只接收HMAC-SHA256  签名
+     * @param vo
+     * @return
+     */
+    public FebsResponse merchantApply(MerchantRegisterVo vo){
+        // 数据库参数和加密参数Map
+        Map<String,String>[] params =merchantRegisterToMap(vo);
+//        return null;
         // 初始化一个HttpClient
         CloseableHttpClient httpClient = HttpClients.createDefault();
         // Post请求
         HttpPost httpPost = new HttpPost("https://api.mch.weixin.qq.com/applyment/micro/submit");
         try {
-//            String signStr = WXPayUtil.generateSignature(param, merchantServerConfig.getApiKey(), SignType.HMACSHA256);
-            String signStr = WXPayUtil.generateSignature(paramMap, merchantServerConfig.getApiKey(), WXPayConstants.SignType.MD5);
-            paramMap.put("sign",signStr);
+            String signStr = WXPayUtil.generateSignature(params[1], merchantServerConfig.getApiKey(), WXPayConstants.SignType.HMACSHA256);
+            params[0].put("sign",signStr);
+            params[1].put("sign",signStr);
             log.info("签名"+signStr);
-//            String xmlData=WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey(),SignType.HMACSHA256);
-            String xmlData=WXPayUtil.generateSignedXml(paramMap, merchantServerConfig.getApiKey(), WXPayConstants.SignType.MD5);
+            String xmlData=WXPayUtil.generateSignedXml(params[1], merchantServerConfig.getApiKey(), WXPayConstants.SignType.HMACSHA256);
             log.info("xml 格式串 {}",xmlData);
             boolean flag=WXPayUtil.isSignatureValid(xmlData,merchantServerConfig.getApiKey());
             log.info("签名验证标识"+flag);
@@ -96,6 +115,17 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         }catch(Exception e){
             log.info("签名异常 {}" ,e.getMessage());
         }
+
+        // 先保存申请数据到数据库中(待处理:状态 申请中)
+        params[0].put("status","申请入驻中");
+        Long id=merchantApplyMapper.getMerchantApplyNextID();
+        params[0].put("id",id.toString());
+        params[1].put("id",id.toString());
+        params[0].put("data_status","1");//初始失效状态，成功则会修改为生效状态
+        // 申请参数入库
+        merchantApplyMapper.addMerchantApply(params[0]);
+      //  if(params.length==2) return new FebsResponse().fail("开关--入驻请求失败 测试数据 ");
+
         httpPost.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_XML.getMimeType());
         try {
             HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -104,15 +134,32 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
                 String responseEntity = EntityUtils.toString(httpResponse.getEntity());
                 Document document = DocumentHelper.parseText(responseEntity);
                 log.info("document->"+document.toString());
-
-                if ("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue())
-                        && "SUCCESS".equalsIgnoreCase(document.selectSingleNode("//result_code").getStringValue())) {
-                    //log.info("获取平台证书 {}",document.selectSingleNode("//certificates").getStringValue());
-                    return document.selectSingleNode("//applyment_id").getStringValue();
-                }else{
+                if ("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue())){
                     log.error("商户入驻请求响应异常 {}", document.selectSingleNode("//return_msg").getStringValue());
+                    if ("FAIL".equalsIgnoreCase(document.selectSingleNode("//result_code").getStringValue())){
+                        return new FebsResponse().fail(document.selectSingleNode("//err_code").getStringValue());
+                    }
+                    if("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//result_code").getStringValue())) {
+                        //log.info("获取平台证书 {}",document.selectSingleNode("//certificates").getStringValue());
+                        //成功，更新申请参数到数据库(待处理:mch_id,sign,business_code,申请成功,applyment_id)
+                        params[0].put("status","申请入驻成功，待签约");
+                        params[0].put("data_status","0");//生效状态
+                        String applyment_id=document.selectSingleNode("//applyment_id").getStringValue();
+                        params[0].put("applyment_id",applyment_id);
+                        merchantApplyMapper.updateMerchantApply(params[0]);
+                        return new FebsResponse().success(applyment_id);
+                    }
+                }else{
+                    String return_msg=document.selectSingleNode("//return_msg").getStringValue();
+
+                    params[0].put("status","申请入驻失败，"+return_msg);
+                    merchantApplyMapper.updateMerchantApply(params[0]);
+                    return new FebsResponse().fail(return_msg);
+                }
+
+                /*
                     if("SUCCESS".equalsIgnoreCase(document.selectSingleNode("//return_code").getStringValue())){
-                        log.info("1、随机字符串 {}",document.selectSingleNode("//nonce_str").getStringValue());
+                        log.info("1、随机字符串 {}", document.selectSingleNode("//nonce_str").getStringValue());
                         log.info("2、签名 {}",document.selectSingleNode("//sign").getStringValue());
                         log.info("3、业务结果 {}",document.selectSingleNode("//result_code").getStringValue());
                         log.info("4、错误代码 {}",document.selectSingleNode("//err_code").getStringValue());
@@ -120,13 +167,144 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
                         log.info("6、参数校验不通过的字段名 {}",document.selectSingleNode("//err_param").getStringValue());
 
                     }
-                }
-
-
+                */
+                }else{
+                    params[0].put("status","申请入驻失败");
+                    merchantApplyMapper.updateMerchantApply(params[0]);
+                    return new FebsResponse().fail("入驻请求失败");
             }
+
         } catch (Exception e) {
             log.error("执行httpclient商户入驻请求错误 {}", e);
         }
-        return null;
+        params[0].put("status","申请入驻失败,入驻请求异常");
+        merchantApplyMapper.updateMerchantApply(params[0]);
+        return   new FebsResponse().fail("入驻请求异常");
+    }
+
+
+
+    // 封装数据
+    public Map[] merchantRegisterToMap(MerchantRegisterVo vo){
+        Map<String,String> parampwd=new HashMap<String,String>();
+        String certFicates=certFicatesService.getCertFicates();
+        //解析证书，获取证书序列号
+        CertficateParseUtil cu=new CertficateParseUtil();
+        cu.certificateParse(certFicates);
+        String version ="3.0";//接口版本号
+        String cert_sn=cu.getSerial_no();// 待处理 平台证书序列号
+        String mch_id=merchantServerConfig.getMerchantId();//商户ID
+        String nonce_str= UUID.randomUUID().toString().replace("-", "");//
+        String sign_type="HMAC-SHA256";//签名类型
+        String business_code=vo.getBusiness_code();//业务申请编号
+        String id_card_copy=vo.getId_card_copy();//身份证人像面照片
+        String id_card_national=vo.getId_card_national();//身份证国徽面照片
+        String id_card_valid_time=vo.getId_card_valid_time();//身份证有效期限
+        String account_bank=vo.getAccount_bank();//开户银行  开户银行对照表
+        String bank_address_code=vo.getBank_address_code();//开户银行省市编码
+
+        String account_number=vo.getAccount_number();//银行账号
+        String store_name=vo.getStore_name();//门店名称
+        String store_address_code=vo.getStore_address_code();//门店省市编码  对照表
+        String store_street=vo.getStore_street();//门店街道名称
+        String store_longitude=vo.getStore_longitude();//门店经度
+        String store_latitude=vo.getStore_latitude();//门店纬度
+        String store_entrance_pic=vo.getStore_entrance_pic();////门店门口照片
+        String indoor_pic=vo.getIndoor_pic();//店内环境照片
+        String address_certification=vo.getAddress_certification();//经营场地证明
+        String merchant_shortname=vo.getMerchant_shortname();//商户简称
+        String service_phone=vo.getService_phone();//客服电话
+        String product_desc=vo.getProduct_desc();//售卖商品/提供服务描述
+        //Rate rate=rateMapper.selectByExample(vo.getRate());//
+
+
+
+        String business_addition_desc=vo.getBusiness_addition_desc();//补充说明
+        String business_addition_pics=vo.getBusiness_addition_pics();//补充材料 (最多可上传5张照片，请填写已)
+
+        String id_card_name="";//身份证名称
+        String id_card_number="";//身份证号
+        String account_name="";//开户名称
+        String contact="";//联系人
+        String contact_phone="";//联系人电话
+        String contact_email="";//联系人邮箱
+
+        parampwd.put("version",version);
+        parampwd.put("cert_sn",cert_sn);
+        parampwd.put("mch_id",mch_id);
+        parampwd.put("nonce_str",nonce_str);
+        parampwd.put("sign_type",sign_type);
+        parampwd.put("business_code",business_code);
+        parampwd.put("id_card_copy",id_card_copy);
+        parampwd.put("id_card_national",id_card_national);
+        parampwd.put("id_card_valid_time",id_card_valid_time);
+        parampwd.put("account_bank",account_bank);
+        parampwd.put("bank_address_code",bank_address_code);
+
+        parampwd.put("account_number",account_number);
+        parampwd.put("store_name",store_name);
+        parampwd.put("store_address_code",store_address_code);
+        parampwd.put("store_street",store_street);
+        if(null!=store_longitude)
+            parampwd.put("store_longitude",store_longitude);
+        if(null!=store_latitude)
+            parampwd.put("store_latitude",store_latitude);
+        parampwd.put("store_entrance_pic",store_entrance_pic);
+        parampwd.put("indoor_pic",indoor_pic);
+        parampwd.put("address_certification",address_certification);
+        parampwd.put("merchant_shortname",merchant_shortname);
+        parampwd.put("service_phone",service_phone);
+        parampwd.put("product_desc",product_desc);
+
+        if(null!=business_addition_desc)
+            parampwd.put("business_addition_desc",business_addition_desc);
+        parampwd.put("business_addition_pics",business_addition_pics);
+        //备份一份 参数数据保存到数据库中
+        Map<String,String> paramDB=new HashMap<String,String>();
+        paramDB.putAll(parampwd);
+        //数据库只保存对应ID即可
+        paramDB.put("rate_id",vo.getRateId().toString());
+//        String bank_name=vo.getBank_name();//开户银行全称（含支行）
+        paramDB.put("bank_id",vo.getBankId().toString());
+
+        String bank_name= bankService.selectByKey(vo.getBankId()).getBankName();
+        if(null!=bank_name)
+            parampwd.put("bank_name",bank_name);
+        String rate=rateService.selectByKey(vo.getRateId()).getRate();//费率
+        parampwd.put("rate",rate);
+
+
+        // 加密参数，不需要保存到数据库中，但需要加密提交给微信接口
+        try {
+            String id_card_name_pwd = vo.getId_card_name();//身份证姓名 (加密)
+            paramDB.put("id_card_name",id_card_name_pwd);
+            id_card_name = certFicatesService.encryptPkcs1padding(id_card_name_pwd);
+            String id_card_number_pwd=vo.getId_card_number();//身份证号码 (加密)
+            paramDB.put("id_card_number",id_card_number_pwd);
+            id_card_number = certFicatesService.encryptPkcs1padding(id_card_number_pwd);
+            String account_name_pwd=vo.getAccount_name();//开户名称 (加密)
+            paramDB.put("account_name",account_name_pwd);
+            account_name = certFicatesService.encryptPkcs1padding(account_name_pwd);
+            String contact_pwd=vo.getContact();//联系人姓名
+            paramDB.put("contact",contact_pwd);
+            contact = certFicatesService.encryptPkcs1padding(contact_pwd);
+            String contact_phone_pwd = vo.getContact_phone();//手机号码 (加密)
+            paramDB.put("contact_phone",contact_phone_pwd);
+            contact_phone=certFicatesService.encryptPkcs1padding(contact_phone_pwd);
+            String contact_email_pwd = vo.getContact_email();//联系邮箱 (加密)
+            paramDB.put("contact_email",contact_email_pwd);
+            if(null!=contact_email_pwd)
+                contact_email=certFicatesService.encryptPkcs1padding(contact_email_pwd);
+
+        }catch (Exception e){
+            log.info("加密失败 {}",e.getMessage());
+        }
+        parampwd.put("account_name",account_name);////开户名称 (加密)
+        parampwd.put("id_card_number",id_card_number);//身份证号码 (加密)
+        parampwd.put("id_card_name",id_card_name);////身份证姓名 (加密)
+        parampwd.put("contact",contact);////联系人姓名
+        parampwd.put("contact_phone",contact_phone);//手机号码 (加密)
+        parampwd.put("contact_email",contact_email);//联系邮箱 (加密)
+        return new Map[]{paramDB,parampwd};
     }
 }
