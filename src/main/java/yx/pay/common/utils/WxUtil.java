@@ -1,13 +1,23 @@
 package yx.pay.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
+import com.github.wxpay.sdk.WXPayConstants;
+import com.github.wxpay.sdk.WXPayUtil;
+
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+import yx.pay.system.domain.wx.MerchantServerConfig;
 import yx.pay.system.domain.wx.PayTypeEnum;
 import yx.pay.system.domain.wx.WxConfig;
 
@@ -43,21 +53,21 @@ public class WxUtil {
 
     private static final SimpleDateFormat outFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
-    @Autowired
-    private WxConfig wxConfig;
 
-    public void commonParams(SortedMap<Object, Object> packageParams) {
+    @Autowired
+    public MerchantServerConfig merchantServerConfig;
+
+    @Autowired
+    public WxConfig wxConfig;
+
+    public void commonParams(SortedMap<String, String> packageParams) {
         // 账号信息
         String appId = wxConfig.getAppId(); // appid
-        String mchId = wxConfig.getMchId(); // 商业号
-        String strRandom = String.valueOf(buildRandom(4)) ;
+        String mchId = merchantServerConfig.getMerchantId(); // 商业号
         // 生成随机字符串
-        String currTime = getCurrTime();
-        String strTime = currTime.substring(8, currTime.length());
-        String nonce_str = strTime + strRandom;
         packageParams.put("appid", appId);// 公众账号ID
         packageParams.put("mch_id", mchId);// 商户号
-        packageParams.put("nonce_str", nonce_str);// 随机字符串
+        packageParams.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));// 随机字符串
     }
 
     /**
@@ -88,28 +98,15 @@ public class WxUtil {
         return (int) ((random * num));
     }
 
-    public String createSign(String characterEncoding, SortedMap<Object, Object> packageParams) {
-        StringBuffer sb = new StringBuffer();
-        Set es = packageParams.entrySet();
-        Iterator it = es.iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String k = (String) entry.getKey();
-            String v = (String) entry.getValue();
-            if (null != v && !"".equals(v) && !"sign".equals(k) && !"key".equals(k)) {
-                sb.append(k + "=" + v + "&");
-            }
-        }
-        sb.append("key=" + wxConfig.getAppId());
-        String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();
-        return sign;
+    public String createSign(SortedMap<String, String> packageParams) throws Exception {
+        return WXPayUtil.generateSignature(packageParams,merchantServerConfig.getApiKey());
     }
 
-    public String buildQrCodeInfo(SortedMap<Object, Object> packageParams,String sign){
+    public String buildQrCodeInfo(SortedMap<String, String> packageParams,String sign){
         StringBuffer qrCode = new StringBuffer();
         qrCode.append("weixin://wxpay/bizpayurl?");
         qrCode.append("appid="+wxConfig.getAppId());
-        qrCode.append("&mch_id="+wxConfig.getMchId());
+        qrCode.append("&mch_id="+merchantServerConfig.getMerchantId());
         qrCode.append("&nonce_str="+packageParams.get("nonce_str"));
         qrCode.append("&product_id="+packageParams.get("product_id"));
         qrCode.append("&time_stamp="+packageParams.get("time_stamp"));
@@ -117,7 +114,7 @@ public class WxUtil {
         return qrCode.toString();
     }
 
-    public String getRequestXml(SortedMap<Object, Object> parameters) {
+    public String getRequestXml(SortedMap<String, String> parameters) {
         StringBuffer sb = new StringBuffer();
         sb.append("<xml>");
         Set es = parameters.entrySet();
@@ -147,17 +144,14 @@ public class WxUtil {
      */
 
     public String getShortUrl(String longUrl) {
-        SortedMap<Object, Object> packageParams = new TreeMap<>();
+        SortedMap<String, String> packageParams = new TreeMap<>();
         String shortUrl = null;
         try {
             //封装通用参数
             commonParams(packageParams);
             packageParams.put("long_url",longUrl);
-            //生成签名
-            String sign = createSign("UTF-8", packageParams);
-            packageParams.put("sign", sign);// 签名
-            String requestXML = getRequestXml(packageParams);
-            String resXml = WxHttpUtil.postData(WxUtil.SHORT_URL, requestXML);
+            String requestXml = WXPayUtil.generateSignedXml(packageParams, merchantServerConfig.getApiKey());
+            String resXml = WxHttpUtil.postData(WxUtil.SHORT_URL, requestXml);
             Map map = XMLUtil.doXMLParse(resXml);
             String returnCode = (String) map.get("return_code");
             if("SUCCESS".equals(returnCode)){
@@ -187,7 +181,7 @@ public class WxUtil {
                 sb.append(k + "=" + v + "&");
             }
         }
-        sb.append("key=" + wxConfig.getAppId());
+        sb.append("key=" + merchantServerConfig.getApiKey());
         //算出摘要
         String mysign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toLowerCase();
         String tenpaySign = ((String)packageParams.get("sign")).toLowerCase();

@@ -2,6 +2,7 @@ package yx.pay.system.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.wxpay.sdk.WXPayUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.JDOMException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 import yx.pay.common.domain.FebsResponse;
+import yx.pay.common.utils.IPUtil;
 import yx.pay.common.utils.QrCodeUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.common.utils.XMLUtil;
 import yx.pay.system.domain.wx.OrderInfo;
+import yx.pay.system.domain.wx.OrderInfoVo;
 import yx.pay.system.domain.wx.ProductInfo;
 import yx.pay.system.domain.wx.WxConfig;
 import yx.pay.system.service.OrderInfoService;
@@ -78,6 +82,64 @@ public class WxController {
         return new FebsResponse().success();
     }
 
+    @PostMapping("pay")
+    public FebsResponse pay(OrderInfoVo orderInfoVo,HttpServletRequest request) throws Exception {
+        orderInfoVo.setIp(IPUtil.getIpAddr(request));
+        return orderInfoService.createOrderInfo(orderInfoVo);
+    }
+
+    @RequestMapping(value="weixin_notify",method=RequestMethod.POST)
+    public void weixin_notify(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // 读取参数
+        InputStream inputStream = request.getInputStream();
+        StringBuffer sb = new StringBuffer();
+        String s;
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        while ((s = in.readLine()) != null) {
+            sb.append(s);
+        }
+        in.close();
+        inputStream.close();
+
+        Map<String, String> resultMap = WXPayUtil.xmlToMap(sb.toString());
+        // 过滤空 设置 TreeMap
+        SortedMap<Object, Object> packageParams = new TreeMap<Object, Object>();
+        Iterator it = resultMap.keySet().iterator();
+        while (it.hasNext()) {
+            String parameter = (String) it.next();
+            String parameterValue = resultMap.get(parameter);
+
+            String v = "";
+            if (null != parameterValue) {
+                v = parameterValue.trim();
+            }
+            packageParams.put(parameter, v);
+        }
+        if(wxUtil.isTenpaySign("UTF-8",packageParams)){
+            String resXml = "";
+            if ("SUCCESS".equals((String) packageParams.get("result_code"))) {
+                // 这里是支付成功
+                String orderNo = (String) packageParams.get("out_trade_no");
+                log.info("微信订单号{}付款成功",orderNo);
+                //这里 根据实际业务场景 做相应的操作
+                // 通知微信.异步确认成功.必写.不然会一直通知后台.八次之后就认为交易失败了.
+                resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
+            } else {
+                log.info("支付失败,错误信息：{}",packageParams.get("err_code"));
+                resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>" + "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
+            }
+            // ------------------------------
+            // 处理业务完毕
+            // ------------------------------
+            BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+            out.write(resXml.getBytes());
+            out.flush();
+            out.close();
+        }else {
+            log.info("通知签名验证失败");
+        }
+    }
+
 
     /**
      * 模式一支付回调URL(生成二维码见 qrCodeUtil)
@@ -96,9 +158,8 @@ public class WxController {
         if (wxUtil.isTenpaySign("UTF-8", packageParams)) {
             String id = String.valueOf(packageParams.get("product_id"));
             if(StringUtils.isNotBlank(id)){
-                int productId = Integer.parseInt(id);
-                ProductInfo info = productService.selectByKey(productId);
-                orderInfoService.createOrderInfo(info);
+
+
             }
         }else{
             log.info("签名错误");

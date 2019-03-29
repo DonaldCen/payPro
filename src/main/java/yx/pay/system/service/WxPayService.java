@@ -10,6 +10,6 @@ public interface WxPayService {
     /**
      * 生成二维码图片
      */
-    void generateQrCodeImages(int userId,int productId);
+    void generateQrCodeImages(int userId,int productId) throws Exception;
 
 }

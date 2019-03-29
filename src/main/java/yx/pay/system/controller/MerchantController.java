@@ -20,6 +20,7 @@ import yx.pay.common.exception.FebsException;
 import yx.pay.system.domain.User;
 import yx.pay.system.domain.vo.MerchantRegisterVo;
 import yx.pay.system.domain.wx.Merchant;
+import yx.pay.system.domain.wx.MerchantApply;
 import yx.pay.system.service.MerchantService;
 import yx.pay.system.service.UploadService;
 import yx.pay.system.service.UserService;
@@ -42,10 +43,16 @@ public class MerchantController extends BaseController {
     @Autowired
     private UploadService uploadService;//图片上传服务
 
+
     @GetMapping
     @RequiresPermissions("merchant:view")
     public Map<String, Object> merchantList(QueryRequest request, Merchant merchant){
         return super.selectByPageNumSize(request, () -> this.merchantService.findMerchantList(request,merchant));
+    }
+
+    public Map<String,Object> merchantAppleList(QueryRequest request, MerchantApply merchantApply){
+//        return super.selectByPageNumSize(request,() -> thi)
+        return null;
     }
 
     @GetMapping("check/{merchantName}")
@@ -86,12 +93,10 @@ public class MerchantController extends BaseController {
       */
     @Log("上传图片")
     @PostMapping("/upload")
-    @RequiresPermissions("merchant:uploadFile")
     public FebsResponse upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
         log.info("图片大小 {}", multipartFile.getSize());
         try {
-            String mchId = uploadService.uploadFile(multipartFile);
-            return new FebsResponse().success(mchId);
+            return uploadService.uploadFile(multipartFile);
         } catch (Exception e) {
             log.error("upload error..",e);
         }

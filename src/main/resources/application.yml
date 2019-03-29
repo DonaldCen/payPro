@@ -31,7 +31,7 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    password:
+    password: KeYpZrZx
     jedis:
       pool:
         min-idle: 8
@@ -75,15 +75,16 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**
+    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**,/api/wx/**
     # token有效期，单位秒
-    jwtTimeOut: 3600
+    jwtTimeOut: 86400
 
 wx:
   appId: wx62eb98733173fa88
   appSecret: 7c91fbeb099af0f90d76c2a76051586c
-  mchId: 7c91fbeb099af0f90d76c2a76051586c
+  mchId: 1402784402
   qrCodeUrl: E:\\
+  notifyUrl: http://localhost:9527/api/wx/pay
 merchant:
   merchantId: 1402784402
   apiKey: 7c91yxeb099af0f90d76c2a76051586c

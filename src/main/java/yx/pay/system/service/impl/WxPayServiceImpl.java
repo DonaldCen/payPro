@@ -1,5 +1,7 @@
 package yx.pay.system.service.impl;
 
+import com.github.wxpay.sdk.WXPayUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Override
     @Transactional
-    public void generateQrCodeImages(int merchantId, int productId) {
+    public void generateQrCodeImages(int merchantId, int productId) throws Exception {
         String qrInfo = buildQrInfo(productId);
         String url = qrCodeUtil.getQrCodePicName(String.valueOf(merchantId));
         //生成付款二维码图片
@@ -61,8 +63,8 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
 
-    private String buildQrInfo(int orderId) {
-        SortedMap<Object, Object> packageParams = new TreeMap<>();
+    private String buildQrInfo(int orderId) throws Exception {
+        SortedMap<String, String> packageParams = new TreeMap<>();
         //封装通用参数
         util.commonParams(packageParams);
 
@@ -70,8 +72,8 @@ public class WxPayServiceImpl implements WxPayService {
         packageParams.put("time_stamp", util.getCurrTime());
 
         //生成签名
-        String sign = util.createSign("UTF-8", packageParams);
-
+//        String sign = util.createSign("UTF-8", packageParams);
+        String sign = util.createSign(packageParams);
         //组装二维码信息
         String qrInfo = util.buildQrCodeInfo(packageParams, sign);
 
