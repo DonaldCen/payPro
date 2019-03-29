@@ -6,8 +6,10 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.IService;
+import yx.pay.system.domain.vo.MerchantRegisterVo;
 import yx.pay.system.domain.wx.Merchant;
 
 
@@ -26,9 +28,8 @@ public interface MerchantService extends IService<Merchant> {
 
     /**
      * 商户入驻申请, 返回 商户申请单号
-     * @param request
-     * @param paramMap
+
      */
-    String MerchantApply(QueryRequest request, Map<String,String> paramMap);
+    FebsResponse merchantApply(MerchantRegisterVo vo);
 
 }
