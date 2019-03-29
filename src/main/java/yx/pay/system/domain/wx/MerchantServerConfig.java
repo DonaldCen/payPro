@@ -14,6 +14,7 @@ public class MerchantServerConfig {
     private String merchantId;//商户ID
     private String apiKey;//商户API密钥
     private String certPath;//证书文件路径
+    private String certPicPath;//证书文件路径(图片上传所用)
     private String apiv3Key;
     public String getMerchantId() {
         return merchantId;
@@ -44,5 +45,13 @@ public class MerchantServerConfig {
 
     public void setApiv3Key(String apiv3Key) {
         this.apiv3Key = apiv3Key;
+    }
+
+    public String getCertPicPath() {
+        return certPicPath;
+    }
+
+    public void setCertPicPath(String certPicPath) {
+        this.certPicPath = certPicPath;
     }
 }
