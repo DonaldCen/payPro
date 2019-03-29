@@ -52,59 +52,226 @@
         SELECT * from t_channel t where t.channel_name = #{channelName}
     </select>
 -->
-    <insert id="addMerchantApply" parameterType="yx.pay.system.domain.wx.MerchantApply">
+
+    <insert id="addMerchantApply" parameterType="java.util.Map">
+        <!--
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        -->
+        INSERT INTO t_merchant_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="version != null">version,</if>
+            <if test="cert_sn != null">cert_sn,</if>
+            <if test="mch_id != null">mch_id,</if>
+            <if test="nonce_str != null">nonce_str,</if>
+            <if test="sign_type != null">sign_type,</if>
+            <if test="sign != null">sign,</if>
+            <if test="business_code != null">business_code,</if>
+            <if test="id_card_copy != null">id_card_copy,</if>
+            <if test="id_card_national != null">id_card_national,</if>
+            <if test="id_card_name != null">id_card_name,</if>
+            <if test="id_card_number != null">id_card_number,</if>
+            <if test="id_card_valid_time != null">id_card_valid_time,</if>
+            <if test="account_name != null">account_name,</if>
+            <if test="account_bank != null">account_bank,</if>
+            <if test="bank_address_code != null">bank_address_code,</if>
+            <if test="bank_name != null">bank_name,</if>
+            <if test="account_number != null">account_number,</if>
+            <if test="store_name != null">store_name,</if>
+            <if test="store_address_code != null">store_address_code,</if>
+            <if test="store_street != null">store_street,</if>
+            <if test="store_longitude != null">store_longitude,</if>
+            <if test="store_latitude != null">store_latitude,</if>
+            <if test="store_entrance_pic != null">store_entrance_pic,</if>
+            <if test="indoor_pic != null">indoor_pic,</if>
+            <if test="address_certification != null">address_certification,</if>
+            <if test="merchant_shortname != null">merchant_shortname,</if>
+            <if test="service_phone != null">service_phone,</if>
+            <if test="product_desc != null">product_desc,</if>
+            <if test="rate != null">rate,</if>
+            <if test="business_addition_desc != null">business_addition_desc,</if>
+            <if test="business_addition_pics != null">business_addition_pics,</if>
+            <if test="contact != null">contact,</if>
+            <if test="contact_phone != null">contact_phone,</if>
+            <if test="contact_email != null">contact_email,</if>
+            <!--
+            <if test="create_date != null">create_date,</if>
+            <if test="apply_date != null">apply_date,</if>
+            <if test="update_date != null">update_date,</if>
+            -->
+            create_date,apply_date,update_date,data_status,
+            <if test="status != null">status,</if>
+            <if test="rate_id != null">rate_id,</if>
+            <if test="bank_id != null">bank_id,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id,jdbcType=BIGINT},</if>
+            <if test="version != null">#{version,jdbcType=VARCHAR},</if>
+            <if test="cert_sn != null">#{cert_sn,jdbcType=VARCHAR},</if>
+            <if test="mch_id != null">#{mch_id,jdbcType=VARCHAR},</if>
+            <if test="nonce_str != null">#{nonce_str,jdbcType=VARCHAR},</if>
+            <if test="sign_type != null">#{sign_type,jdbcType=VARCHAR},</if>
+            <if test="sign != null">#{sign,jdbcType=VARCHAR},</if>
+            <if test="business_code != null">#{business_code,jdbcType=VARCHAR},</if>
+            <if test="id_card_copy != null">#{id_card_copy,jdbcType=VARCHAR},</if>
+            <if test="id_card_national != null">#{id_card_national,jdbcType=VARCHAR},</if>
+            <if test="id_card_name != null">#{id_card_name,jdbcType=VARCHAR},</if>
+            <if test="id_card_number != null">#{id_card_number,jdbcType=VARCHAR},</if>
+            <if test="id_card_valid_time != null">#{id_card_valid_time,jdbcType=VARCHAR},</if>
+            <if test="account_name != null">#{account_name,jdbcType=VARCHAR},</if>
+            <if test="account_bank != null">#{account_bank,jdbcType=VARCHAR},</if>
+            <if test="bank_address_code != null">#{bank_address_code,jdbcType=VARCHAR},</if>
+            <if test="bank_name != null">#{bank_name,jdbcType=VARCHAR},</if>
+            <if test="account_number != null">#{account_number,jdbcType=VARCHAR},</if>
+            <if test="store_name != null">#{store_name,jdbcType=VARCHAR},</if>
+            <if test="store_address_code != null">#{store_address_code,jdbcType=VARCHAR},</if>
+            <if test="store_street != null">#{store_street,jdbcType=VARCHAR},</if>
+            <if test="store_longitude != null">#{store_longitude,jdbcType=VARCHAR},</if>
+            <if test="store_latitude != null">#{store_latitude,jdbcType=VARCHAR},</if>
+            <if test="store_entrance_pic != null">#{store_entrance_pic,jdbcType=VARCHAR},</if>
+            <if test="indoor_pic != null">#{indoor_pic,jdbcType=VARCHAR},</if>
+            <if test="address_certification != null">#{address_certification,jdbcType=VARCHAR},</if>
+            <if test="merchant_shortname != null">#{merchant_shortname,jdbcType=VARCHAR},</if>
+            <if test="service_phone != null">#{service_phone,jdbcType=VARCHAR},</if>
+            <if test="product_desc != null">#{product_desc,jdbcType=VARCHAR},</if>
+            <if test="rate != null">#{rate,jdbcType=VARCHAR},</if>
+            <if test="business_addition_desc != null">#{business_addition_desc,jdbcType=VARCHAR},</if>
+            <if test="business_addition_pics != null">#{business_addition_pics,jdbcType=VARCHAR},</if>
+            <if test="contact != null">#{contact,jdbcType=VARCHAR},</if>
+            <if test="contact_phone != null">#{contact_phone,jdbcType=VARCHAR},</if>
+            <if test="contact_email != null">#{contact_email,jdbcType=VARCHAR},</if>
+            <!--
+            <if test="create_date != null"> #{create_date,jdbcType=TIMESTAMP},</if>
+            <if test="apply_date != null"> #{apply_date,jdbcType=TIMESTAMP},</if>
+            <if test="update_date != null"> #{update_date,jdbcType=TIMESTAMP},</if>
+            -->
+            sysdate(),sysdate(),sysdate(),
+            <if test="data_status != null">#{data_status,jdbcType=VARCHAR},</if>
+            <if test="status != null">#{status,jdbcType=VARCHAR},</if>
+            <if test="rate_id != null">#{rate_id,jdbcType=TINYINT},</if>
+            <if test="bank_id != null">#{bank_id,jdbcType=TINYINT},</if>
+        </trim>
+
+
+    </insert>
+    <insert id="addMerchantApply2" parameterType="java.util.Map">
         <!--
             keyProperty：将查询出的主键设置到parameterType中的哪个属性上
             order：相对于sql语句的执行顺序
             resultType：指定返回值类型
             LAST_INSERT_ID()：获取ID函数
-        -->
+
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
         SELECT LAST_INSERT_ID()
     </selectKey>
-        INSERT INTO MerchantApply(
-        version,cert_sn,mch_id,nonce_str,sign_type,sign,business_code,id_card_copy,id_card_nationa,id_card_name,id_card_number,id_card_valid_time
-        ,account_name,account_bank,bank_address_code,bank_name,account_number,store_name,store_address_code,store_street,store_longitude,store_latitude,store_entrance_pic,
-        indoor_pic,address_certification,merchant_shortname,service_phone,product_desc,rate,business_addition_desc,business_addition_pics,
-        contact,contact_phone,contract_email,create_date,apply_date,update_date)
-        values(
-        #{version, jdbcType=VARCHAR},
-        #{certSN, jdbcType=VARCHAR},
-        #{nonceStr, jdbcType=VARCHAR},
-        #{signType, jdbcType=VARCHAR},
-        #{sign, jdbcType=VARCHAR},
-        #{businessCode, jdbcType=VARCHAR},
-        #{idCardCopy, jdbcType=VARCHAR},
-        #{idCardNationa, jdbcType=VARCHAR},
-        #{idCardName, jdbcType=VARCHAR},
-        #{idCardNumber, jdbcType=VARCHAR},
-        #{idCardValidTime, jdbcType=VARCHAR},
-        #{accountName, jdbcType=VARCHAR},
-        #{accountBank, jdbcType=VARCHAR},
-        #{bankAddressCode, jdbcType=VARCHAR},
-        #{bankName, jdbcType=VARCHAR},
-        #{accountNumber, jdbcType=VARCHAR},
-        #{storeName, jdbcType=VARCHAR},
-        #{storeAddressCode, jdbcType=VARCHAR},
-        #{storeStreet, jdbcType=VARCHAR},
-        #{storeLogitude, jdbcType=VARCHAR},
-        #{storeLatitude, jdbcType=VARCHAR},
-        #{storeEntrancePic, jdbcType=VARCHAR},
-        #{indoorPic, jdbcType=VARCHAR},
-        #{addressCertification, jdbcType=VARCHAR},
-        #{merchantshortName, jdbcType=VARCHAR},
-        #{servicePhone, jdbcType=VARCHAR},
-        #{productDesc, jdbcType=VARCHAR},
-        #{rate, jdbcType=VARCHAR},
-        #{businessAdditionDesc, jdbcType=VARCHAR},
-        #{businessAdditionPics, jdbcType=VARCHAR},
-        #{contact, jdbcType=VARCHAR},
-        #{contactPhone, jdbcType=VARCHAR},
-        #{contactEmail, jdbcType=VARCHAR},
-        #{applymentID, jdbcType=VARCHAR},
-        sysdate(),sysdate(),sysdate()
+        -->
+        INSERT INTO t_merchant_apply(
+            id,
+            version,
+            cert_sn,
+            mch_id,
+            nonce_str,
+            sign_type,
+            sign,
+            business_code,
+            id_card_copy,
+            id_card_national,
+            id_card_name,
+            id_card_number,
+            id_card_valid_time,
+            account_name,
+            account_bank,
+            bank_address_code,
+            bank_name,
+            account_number,
+            store_name,
+            store_address_code,
+            store_street,
+            store_longitude,
+            store_latitude,
+            store_entrance_pic,
+            indoor_pic,
+            address_certification,
+            merchant_shortname,
+            service_phone,
+            product_desc,
+            rate,
+            business_addition_desc,
+            business_addition_pics,
+            contact,
+            contact_phone,
+            contact_email,
+            create_date,
+            apply_date,
+            update_date,
+            status
+          ) values(
+                #{id,jdbcType=BIGINT},
+                #{version,jdbcType=VARCHAR},
+                #{cert_sn,jdbcType=VARCHAR},
+                #{mch_id,jdbcType=VARCHAR},
+                #{nonce_str,jdbcType=VARCHAR},
+                #{sign_type,jdbcType=VARCHAR},
+                #{sign,jdbcType=VARCHAR},
+                #{business_code,jdbcType=VARCHAR},
+                #{id_card_copy,jdbcType=VARCHAR},
+                #{id_card_national,jdbcType=VARCHAR},
+                #{id_card_name,jdbcType=VARCHAR},
+                #{id_card_number,jdbcType=VARCHAR},
+                #{id_card_valid_time,jdbcType=VARCHAR},
+                #{account_name,jdbcType=VARCHAR},
+                #{account_bank,jdbcType=VARCHAR},
+                #{bank_address_code,jdbcType=VARCHAR},
+                #{bank_name,jdbcType=VARCHAR},
+                #{account_number,jdbcType=VARCHAR},
+                #{store_name,jdbcType=VARCHAR},
+                #{store_address_code,jdbcType=VARCHAR},
+                #{store_street,jdbcType=VARCHAR},
+                #{store_longitude,jdbcType=VARCHAR},
+                #{store_latitude,jdbcType=VARCHAR},
+                #{store_entrance_pic,jdbcType=VARCHAR},
+                #{indoor_pic,jdbcType=VARCHAR},
+                #{address_certification,jdbcType=VARCHAR},
+                #{merchant_shortname,jdbcType=VARCHAR},
+                #{service_phone,jdbcType=VARCHAR},
+                #{product_desc,jdbcType=VARCHAR},
+                #{rate,jdbcType=VARCHAR},
+                #{business_addition_desc,jdbcType=VARCHAR},
+                #{business_addition_pics,jdbcType=VARCHAR},
+                #{contact,jdbcType=VARCHAR},
+                #{contact_phone,jdbcType=VARCHAR},
+                #{contact_email,jdbcType=VARCHAR},
+                sysdate(),sysdate(),sysdate(),
+                #{status,jdbcType=VARCHAR}
         )
     </insert>
+
+<!-- 申请入驻成功后，提交返回结果-->
+    <update id="updateMerchantApply"  parameterType="java.util.Map">
+        UPDATE t_merchant_apply
+        <set>
+        <if test="applyment_id != null">
+            applyment_id = #{applyment_id,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            status = #{status,jdbcType=VARCHAR},
+        </if>
+        <if test="data_status != null">
+            data_status = #{data_status,jdbcType=VARCHAR},
+        </if>
+            update_date=sysdate()
+      </set>
+        where
+         mch_id = #{mch_id} and
+         sign = #{sign}   and
+         business_code = #{business_code} and
+         id=#{id}
+    </update>
+
+
 <!--
     <update id="updateChannelInfo" parameterType="yx.pay.system.domain.wx.MerchantApply">
         UPDATE t_channel
@@ -130,4 +297,12 @@
         set status = #{status}
         where applyment_id = #{applymentID}
     </update>
+    <select id="getMerchantApplyNextID" resultType="java.lang.Long">
+        select
+         case when a.nextid is null then 1 else a.nextid end  nextid
+        from (
+          select max(id)+1 nextid from t_merchant_apply
+        ) a
+
+    </select>
 </mapper>
