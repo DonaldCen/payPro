@@ -35,8 +35,8 @@ public class SignUtil {
       //  toSign.append("key=").append(secret);//添加商户Key
         log.info("参数排序后的参数串 {}",toSign.toString());
        // return sha256_HMAC(toSign.toString(), secret);
-        //return  toSign(new StringBuffer(toSign.toString()),secret ,"HMAC-SHA256");
-        return  toSign(new StringBuffer(toSign.toString()),secret ,"MD5");
+        return  toSign(new StringBuffer(toSign.toString()),secret ,"HMAC-SHA256");
+//        return  toSign(new StringBuffer(toSign.toString()),secret ,"MD5");
     }
 
 
