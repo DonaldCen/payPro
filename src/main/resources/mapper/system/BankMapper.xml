@@ -24,5 +24,8 @@
         SELECT * from t_bank_info a
         where a.parent_id = #{parentId}
     </select>
+    <select id="selectByKey"  parameterType="yx.pay.system.domain.Bank"  resultMap="bankMap">
+        select * from t_bank_info where id=#{id}
+    </select>
 
 </mapper>
