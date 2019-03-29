@@ -3,9 +3,7 @@
 <mapper namespace="yx.pay.system.dao.wx.MerchantApplyMapper">
     <resultMap id="MerchantApplyResultMap" type="yx.pay.system.domain.wx.MerchantApply">
         <id column="id"                         jdbcType="INTEGER" property="id"/>
-        <result column="update_date"            jdbcType="TIMESTAMP" property="updateDate"/>
-        <result column="apply_date"             jdbcType="TIMESTAMP" property="applyDate"/>
-        <result column="create_date"            jdbcType="TIMESTAMP" property="createDate"/>
+
         <result column="applyment_id"           jdbcType="VARCHAR" property="applymentID"/>
         <result column="contact_email"          jdbcType="VARCHAR" property="contactEmail"/>
         <result column="contact_phone"          jdbcType="VARCHAR" property="contactPhone"/>
@@ -41,13 +39,20 @@
         <result column="mch_id"                 jdbcType="VARCHAR" property="mchID"/>
         <result column="cert_sn"                jdbcType="VARCHAR" property="certSN"/>
         <result column="version"                jdbcType="VARCHAR" property="version"/>
+        <result column="rate_id"                jdbcType="VARCHAR" property="rate_id"/>
+        <result column="bank_id"                jdbcType="VARCHAR" property="bank_id"/>
+        <result column="status"                 jdbcType="VARCHAR" property="status"/>
+        <result column="data_status"            jdbcType="VARCHAR" property="data_status"/>
+        <result column="update_date"            jdbcType="TIMESTAMP" property="updateDate"/>
+        <result column="apply_date"             jdbcType="TIMESTAMP" property="applyDate"/>
+        <result column="create_date"            jdbcType="TIMESTAMP" property="createDate"/>
 
     </resultMap>
-<!--
-    <select id="findChannelList" resultMap="MerchantApplyResultMap">
-        SELECT * from t_channel t
-    </select>
 
+    <select id="findMerchantApplyList" resultMap="MerchantApplyResultMap">
+        select a.*,b.bank_name,c.rate from t_merchant_apply a,t_bank_info b,t_rate c where a.bank_id=b.id and a.rate_id=c.id
+    </select>
+<!---
     <select id="findByName" parameterType="string" resultMap="MerchantApplyResultMap">
         SELECT * from t_channel t where t.channel_name = #{channelName}
     </select>
