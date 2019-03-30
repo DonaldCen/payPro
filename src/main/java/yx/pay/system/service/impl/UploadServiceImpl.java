@@ -54,7 +54,7 @@ public class UploadServiceImpl implements UploadService{
         File excelFile = null;
         String error = null;
         try {
-            client = HttpClients.custom().setSSLContext(SSLContextUtils.getSSLContext(merchantServerConfig.getCertPicPath(),merchantServerConfig.getMerchantId())).build();
+            client = HttpClients.custom().setSSLContext(SSLContextUtils.getSSLContext(merchantServerConfig.getCertPath(),merchantServerConfig.getMerchantId())).build();
             // 生成签名和图片md5加密
             String hash = DigestUtils.md5Hex(multipartFile.getBytes());
             Map<String, String> param = new HashMap<>(3);
