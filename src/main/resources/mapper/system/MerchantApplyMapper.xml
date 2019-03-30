@@ -95,7 +95,7 @@
             <if test="merchant_shortname != null">merchant_shortname,</if>
             <if test="service_phone != null">service_phone,</if>
             <if test="product_desc != null">product_desc,</if>
-            <if test="rate != null">rate,</if>
+
             <if test="business_addition_desc != null">business_addition_desc,</if>
             <if test="business_addition_pics != null">business_addition_pics,</if>
             <if test="contact != null">contact,</if>
@@ -108,8 +108,8 @@
             -->
             create_date,apply_date,update_date,data_status,
             <if test="status != null">status,</if>
-            <if test="rate_id != null">rate_id,</if>
-            <if test="bank_id != null">bank_id,</if>
+            <if test="rateId != null">rate_id,</if>
+            <if test="bankId != null">bank_id,</if>
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -142,7 +142,7 @@
             <if test="merchant_shortname != null">#{merchant_shortname,jdbcType=VARCHAR},</if>
             <if test="service_phone != null">#{service_phone,jdbcType=VARCHAR},</if>
             <if test="product_desc != null">#{product_desc,jdbcType=VARCHAR},</if>
-            <if test="rate != null">#{rate,jdbcType=VARCHAR},</if>
+
             <if test="business_addition_desc != null">#{business_addition_desc,jdbcType=VARCHAR},</if>
             <if test="business_addition_pics != null">#{business_addition_pics,jdbcType=VARCHAR},</if>
             <if test="contact != null">#{contact,jdbcType=VARCHAR},</if>
@@ -156,8 +156,8 @@
             sysdate(),sysdate(),sysdate(),
             <if test="data_status != null">#{data_status,jdbcType=VARCHAR},</if>
             <if test="status != null">#{status,jdbcType=VARCHAR},</if>
-            <if test="rate_id != null">#{rate_id,jdbcType=TINYINT},</if>
-            <if test="bank_id != null">#{bank_id,jdbcType=TINYINT},</if>
+            <if test="rateId != null">#{rateId,jdbcType=TINYINT},</if>
+            <if test="bankId != null">#{bankId,jdbcType=TINYINT},</if>
         </trim>
 
 
