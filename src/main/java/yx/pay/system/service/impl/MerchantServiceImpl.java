@@ -15,6 +15,7 @@ import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -117,9 +118,11 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
             log.info("签名验证标识"+flag);
             httpPost.setEntity(new StringEntity(xmlData, "UTF-8"));
         }catch(Exception e){
+            e.printStackTrace();
             log.info("签名异常 {}" ,e.getMessage());
         }
 
+        checkParam( params[1]);
         // 先保存申请数据到数据库中(待处理:状态 申请中)
         params[0].put("status","申请入驻中");
         Long id=merchantApplyMapper.getMerchantApplyNextID();
@@ -188,7 +191,8 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
 
 
     // 封装数据
-    public Map[] merchantRegisterToMap(MerchantRegisterVo vo){
+    public Map[] merchantRegisterToMap1(MerchantRegisterVo vo){
+        log.info("Vo 参数 "+vo.toString());
         Map<String,String> parampwd=new HashMap<String,String>();
         String certFicates=certFicatesService.getCertFicates();
         //解析证书，获取证书序列号
@@ -228,8 +232,6 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         String service_phone=vo.getService_phone();//客服电话
         String product_desc=vo.getProduct_desc();//售卖商品/提供服务描述
         //Rate rate=rateMapper.selectByExample(vo.getRate());//
-
-
 
         String business_addition_desc=vo.getBusiness_addition_desc();//补充说明
         String business_addition_pics=vo.getBusiness_addition_pics();//补充材料 (最多可上传5张照片，请填写已)
@@ -313,12 +315,157 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         }catch (Exception e){
             log.info("加密失败 {}",e.getMessage());
         }
+
         parampwd.put("account_name",account_name);////开户名称 (加密)
         parampwd.put("id_card_number",id_card_number);//身份证号码 (加密)
         parampwd.put("id_card_name",id_card_name);////身份证姓名 (加密)
         parampwd.put("contact",contact);////联系人姓名
         parampwd.put("contact_phone",contact_phone);//手机号码 (加密)
         parampwd.put("contact_email",contact_email);//联系邮箱 (加密)
+        log.info("参数:"+paramDB.toString());
+
+
         return new Map[]{paramDB,parampwd};
+    }
+
+    public Map[] merchantRegisterToMap(MerchantRegisterVo vo){
+        log.info("Vo 参数 "+vo.toString());
+        Map<String,String> parampwd=new HashMap<String,String>();
+        parampwd=object2Map(vo);
+
+        String certFicates=certFicatesService.getCertFicates();
+        //解析证书，获取证书序列号
+        CertficateParseUtil cu=new CertficateParseUtil();
+        cu.certificateParse(certFicates);
+
+        String original ="";
+        try {
+            original=certFicatesService.decryptCertSN(cu.getAssociated_data(), cu.getNonce(), cu.getCiphertext(), merchantServerConfig.getApiv3Key());
+        }catch (Exception e){
+            log.info(" 解析证书原文错误 "+e.getMessage());
+
+        }
+        String version ="3.0";//接口版本号
+        String cert_sn=cu.getSerial_no();// 待处理 平台证书序列号
+        String mch_id=merchantServerConfig.getMerchantId();//商户ID
+        String nonce_str= UUID.randomUUID().toString().replace("-", "");//
+        String sign_type="HMAC-SHA256";//签名类型
+        String business_code=nonce_str;//vo.getBusiness_code();//业务申请编号(直接用随机码)
+
+        parampwd.put("version",version);
+        parampwd.put("cert_sn",cert_sn);
+        parampwd.put("mch_id",mch_id);
+        parampwd.put("nonce_str",nonce_str);
+        parampwd.put("sign_type",sign_type);
+        parampwd.put("business_code",business_code);
+
+        //获取对应的数据ID->name
+        //bankId->account_bank ,bank_name	否	(支行)
+        if(parampwd.containsKey("bankId")){
+            String account_bank= bankService.selectByKey(vo.getBankId()).getBankName();
+            parampwd.put("account_bank",account_bank);
+        }
+        if(parampwd.containsKey("rateId")){
+            String rate_pwd=rateService.selectByKey(vo.getRateId()).getRate();//费率
+            parampwd.put("rate",rate_pwd);
+        }
+
+        //备份一份 参数数据保存到数据库中
+        Map<String,String> paramDB=new HashMap<String,String>();
+        paramDB.putAll(parampwd);
+        // 再处理需要加密的参数
+        String id_card_name="";//身份证名称
+        String id_card_number="";//身份证号
+        String account_name="";//开户名称
+        String contact="";//联系人
+        String contact_phone="";//联系人电话
+        String contact_email="";//联系人邮箱
+        try{
+            if(parampwd.containsKey("id_card_name")){
+                parampwd.put("id_card_name", EncryptionUtils.rsaEncryptByCert(parampwd.get("id_card_name"),original));
+            }
+            if(parampwd.containsKey("id_card_number")){
+                parampwd.put("id_card_number", EncryptionUtils.rsaEncryptByCert(parampwd.get("id_card_number"),original));
+            }
+            if(parampwd.containsKey("account_name")){
+                parampwd.put("account_name", EncryptionUtils.rsaEncryptByCert(parampwd.get("account_name"),original));
+            }
+            if(parampwd.containsKey("contact")){
+                parampwd.put("contact", EncryptionUtils.rsaEncryptByCert(parampwd.get("contact"),original));
+            }
+            if(parampwd.containsKey("contact_phone")){
+                parampwd.put("contact_phone", EncryptionUtils.rsaEncryptByCert(parampwd.get("contact_phone"),original));
+            }
+            if(parampwd.containsKey("contact_email")){
+                parampwd.put("contact_email", EncryptionUtils.rsaEncryptByCert(parampwd.get("contact_email"),original));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
+        return new Map[]{paramDB,parampwd};
+    }
+
+    /**
+     * 实体对象转成Map
+     *
+     * @param obj 实体对象
+     * @return
+     */
+    public  Map<String, String> object2Map(Object obj) {
+        Map<String, String> map = new HashMap<String, String>();
+        if (obj == null) {
+            return map;
+        }
+        Class clazz = obj.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        try {
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if(null==field.get(obj)) continue;//为空则剔除
+                map.put(field.getName(), field.get(obj).toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /**
+     * 参数检查函数
+     * @param paramMap
+     */
+    public void checkParam(Map<String,String> paramMap){
+        log.info(paramMap.toString());
+        String[] needParamList=new String[]{
+                "version","cert_sn","mch_id","nonce_str","sign_type","sign","business_code","id_card_copy","id_card_national","id_card_name","id_card_number","id_card_valid_time","account_name",
+                "bank_address_code","account_number","store_name","store_address_code","store_street","store_entrance_pic",
+                "indoor_pic","merchant_shortname","service_phone","product_desc","contact","contact_phone","rate","account_bank"
+        };
+        String[] noNeedParamList=new String[]{"address_certification","contact_email","bank_name","store_longitude","store_latitude","business_addition_desc","business_addition_pics"};
+        int countNeed=0;
+        for(String s:needParamList){
+            if(!paramMap.containsKey(s)) {
+
+                log.info("未提供必要参数:"+s);
+            }else{
+                countNeed++;
+            }
+        }
+        log.info("-------------必要参数总数："+needParamList.length+"个,已提供了"+countNeed+"个" );
+        countNeed=0;
+        for(String s:noNeedParamList){
+            if(!paramMap.containsKey(s)) {
+                log.info("未提供非必要参数"+s);
+            }else{
+                countNeed++;
+            }
+        }
+        log.info("-------------非必要参数总数："+noNeedParamList.length+"个,已提供了"+countNeed+"个" );
+
+
+
     }
 }
