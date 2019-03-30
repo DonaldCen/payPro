@@ -24,6 +24,8 @@ import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.impl.BaseService;
 import yx.pay.common.utils.CertficateParseUtil;
 import yx.pay.common.utils.EncryptionUtils;
+import yx.pay.common.utils.SSLContextUtils;
+import yx.pay.common.utils.SignUtil;
 import yx.pay.system.dao.BankMapper;
 import yx.pay.system.dao.RateMapper;
 import yx.pay.system.dao.wx.MerchantApplyMapper;
@@ -104,10 +106,11 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         // Post请求
         HttpPost httpPost = new HttpPost("https://api.mch.weixin.qq.com/applyment/micro/submit");
         try {
-            String signStr = WXPayUtil.generateSignature(params[1], merchantServerConfig.getApiKey(), WXPayConstants.SignType.HMACSHA256);
+            httpClient = HttpClients.custom().setSSLContext(SSLContextUtils.getSSLContext(merchantServerConfig.getCertPath(), merchantServerConfig.getMerchantId())).build();
+            String signStr = SignUtil.wechatCertficatesSignBySHA256(params[1], merchantServerConfig.getApiKey());//WXPayUtil.generateSignature(params[1], merchantServerConfig.getApiKey(), WXPayConstants.SignType.HMACSHA256);
             params[0].put("sign",signStr);
             params[1].put("sign",signStr);
-            log.info("签名"+signStr);
+            log.info("商户入驻申请接口签名 "+signStr);
             String xmlData=WXPayUtil.generateSignedXml(params[1], merchantServerConfig.getApiKey(), WXPayConstants.SignType.HMACSHA256);
             log.info("xml 格式串 {}",xmlData);
             boolean flag=WXPayUtil.isSignatureValid(xmlData,merchantServerConfig.getApiKey());
@@ -152,7 +155,6 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
                     }
                 }else{
                     String return_msg=document.selectSingleNode("//return_msg").getStringValue();
-
                     params[0].put("status","申请入驻失败，"+return_msg);
                     merchantApplyMapper.updateMerchantApply(params[0]);
                     return new FebsResponse().fail(return_msg);
@@ -206,7 +208,7 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         String mch_id=merchantServerConfig.getMerchantId();//商户ID
         String nonce_str= UUID.randomUUID().toString().replace("-", "");//
         String sign_type="HMAC-SHA256";//签名类型
-        String business_code=vo.getBusiness_code();//业务申请编号
+        String business_code=nonce_str;//vo.getBusiness_code();//业务申请编号(直接用随机码)
         String id_card_copy=vo.getId_card_copy();//身份证人像面照片
         String id_card_national=vo.getId_card_national();//身份证国徽面照片
         String id_card_valid_time=vo.getId_card_valid_time();//身份证有效期限
