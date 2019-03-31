@@ -46,6 +46,7 @@
         <result column="update_date"            jdbcType="TIMESTAMP" property="updateDate"/>
         <result column="apply_date"             jdbcType="TIMESTAMP" property="applyDate"/>
         <result column="create_date"            jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="apply_desc"             jdbcType="VARCHAR" property="apply_desc"/>
 
     </resultMap>
 
@@ -110,6 +111,7 @@
             <if test="status != null">status,</if>
             <if test="rateId != null">rate_id,</if>
             <if test="bankId != null">bank_id,</if>
+            <if test="apply_desc != null">apply_desc,</if>
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -158,6 +160,7 @@
             <if test="status != null">#{status,jdbcType=VARCHAR},</if>
             <if test="rateId != null">#{rateId,jdbcType=TINYINT},</if>
             <if test="bankId != null">#{bankId,jdbcType=TINYINT},</if>
+            <if test="apply_desc != null">apply_desc,</if>
         </trim>
 
 
@@ -263,6 +266,9 @@
         </if>
         <if test="status != null">
             status = #{status,jdbcType=VARCHAR},
+        </if>
+        <if test="apply_desc != null">
+            apply_desc = #{apply_desc,jdbcType=VARCHAR},
         </if>
         <if test="data_status != null">
             data_status = #{data_status,jdbcType=VARCHAR},
