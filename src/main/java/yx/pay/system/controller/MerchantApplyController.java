@@ -12,6 +12,7 @@ import yx.pay.common.domain.QueryRequest;
 import yx.pay.system.domain.wx.MerchantApply;
 import yx.pay.system.service.MerchantApplyService;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,6 +26,7 @@ public class MerchantApplyController extends BaseController {
     @GetMapping
     @RequiresPermissions("merchantApply:view")
     public Map<String, Object> merchantList(QueryRequest request, MerchantApply merchantApply) {
-        return super.selectByPageNumSize(request, () -> this.merchantApplyService.findMerchantApplyList(request, merchantApply));
+        List<MerchantApply> list = this.merchantApplyService.findMerchantApplyList(request, merchantApply);
+        return super.selectByPageNumSize(request, () -> list);
     }
 }
