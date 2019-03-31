@@ -89,31 +89,26 @@ public class MerchantApply extends BaseEntity {
     private String contactPhone;
     @Column(name = "contact_email")
     private String contactEmail;//34、联系邮箱
-
     @Column(name = "applyment_id")
     private String applymentID;//35、商户申请单号
-
     @Column(name = "create_date")
     private String createDate;//36、创建日期
-
     @Column(name = "apply_date")
     private String applyDate;//37、申请日期
     @Column(name = "update_date")
     private String updateDate;//38、更新日期
-
-
     @Column(name = "sub_mch_id")
     private String subMchId;//39、小微商户id
-
     @Column(name = "status")
     private String status;//40、申请状态
-
     @Column(name="bank_id")
     private String bank_id;//41、银行ID
     @Column(name="rate_id")
     private String rate_id;//42、费率ID
     @Column(name="data_status")
     private String data_status;//43、数据状态{0 :生效 1：失效}
+    @Column(name="apply_desc")
+    private String apply_desc;//43、申请说明{ 签名失效、敏感数据加密失效、认证失效、网络失效。。。}
 
 
 
