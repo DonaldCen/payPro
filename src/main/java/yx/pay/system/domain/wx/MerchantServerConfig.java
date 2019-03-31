@@ -13,9 +13,19 @@ import org.springframework.stereotype.Component;
 public class MerchantServerConfig {
     private String merchantId;//商户ID
     private String apiKey;//商户API密钥
-    private String certPath;//证书文件路径
-    private String certPicPath;//证书文件路径(图片上传所用)
+    private String certPath;//证书文件路径 ( 双向证书 apiclient_cert.p12)
+    private String originalCertPath;//证书文件路径(证书原文路径,用加密的)
     private String apiv3Key;
+
+    public String getOriginalCertPath() {
+        return originalCertPath;
+    }
+
+    public void setOriginalCertPath(String originalCertPath) {
+        this.originalCertPath = originalCertPath;
+    }
+
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -47,11 +57,5 @@ public class MerchantServerConfig {
         this.apiv3Key = apiv3Key;
     }
 
-    public String getCertPicPath() {
-        return certPicPath;
-    }
 
-    public void setCertPicPath(String certPicPath) {
-        this.certPicPath = certPicPath;
-    }
 }
