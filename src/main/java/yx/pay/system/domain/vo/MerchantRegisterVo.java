@@ -1,5 +1,7 @@
 package yx.pay.system.domain.vo;
 
+import javax.validation.constraints.NotNull;
+
 public class MerchantRegisterVo {
     /**
      * 业务申请编号
@@ -8,28 +10,34 @@ public class MerchantRegisterVo {
     /**
      * 身份证人像面照片 media_id
      */
+    @NotNull(message = "身份证人像面照片不能为空")
     private String id_card_copy;
     /**
      * 身份证国徽面照片 media_id
      */
+    @NotNull(message = "身份证国徽面照片不能为空")
     private String id_card_national;
     /**
      * 身份证姓名
      */
+    @NotNull(message = "身份证姓名不能为空")
     private String id_card_name;
     /**
      * 身份证号码
      */
+    @NotNull(message = "身份证号码不能为空")
     private String id_card_number;
     /**
      * 身份证有效期限
      * 格式：
      * ["1970-01-01","长期"]
      */
+    @NotNull(message = "身份证有效期限不能为空")
     private String id_card_valid_time;
     /**
      * 开户名称
      */
+    @NotNull(message = "开户名称不能为空")
     private String account_name;
     /**
      * 开户银行
@@ -38,26 +46,32 @@ public class MerchantRegisterVo {
     /**
      * 开户银行省市编码
      */
+    @NotNull(message = "开户银行省市编码不能为空")
     private String bank_address_code;
     /**
      * 开户银行全称（含支行）
      */
+    @NotNull(message = "开户银行全称（含支行）不能为空")
     private String bank_name;
     /**
      * 银行账号
      */
+    @NotNull(message = "银行账号不能为空")
     private String account_number;
     /**
      * 门店名称
      */
+    @NotNull(message = "门店名称不能为空")
     private String store_name;
     /**
      * 门店省市编码
      */
+    @NotNull(message = "门店省市编码不能为空")
     private String store_address_code;
     /**
      * 门店街道名称
      */
+    @NotNull(message = "门店街道名称不能为空")
     private String store_street;
     /**
      * 门店经度
@@ -70,10 +84,12 @@ public class MerchantRegisterVo {
     /**
      * 门店门口照片 media_id
      */
+    @NotNull(message = "门店门口照片不能为空")
     private String store_entrance_pic;
     /**
      * 店内环境照片 media_id
      */
+    @NotNull(message = "店内环境照片不能为空")
     private String indoor_pic;
     /**
      * 经营场地证明
@@ -84,14 +100,17 @@ public class MerchantRegisterVo {
     /**
      * 商户简称
      */
+    @NotNull(message = "商户简称不能为空")
     private String merchant_shortname;
     /**
      * 客服电话
      */
+    @NotNull(message = "客服电话不能为空")
     private String service_phone;
     /**
      * 售卖商品/提供服务描述
      */
+    @NotNull(message = "售卖商品/提供服务描述不能为空")
     private String product_desc;
     /**
      * 费率
@@ -100,18 +119,22 @@ public class MerchantRegisterVo {
     /**
      * 联系人姓名
      */
+    @NotNull(message = "联系人姓名不能为空")
     private String contact;
     /**
      * 手机号码
      */
+    @NotNull(message = "手机号码不能为空")
     private String contact_phone;
     /**
      * 银行ID
      */
+    @NotNull(message = "银行不能为空")
     private Integer bankId;
     /**
      * 费率ID
      */
+    @NotNull(message = "费率不能为空")
     private Integer rateId;
 
     private String contact_email;

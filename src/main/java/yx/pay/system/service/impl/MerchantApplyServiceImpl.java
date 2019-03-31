@@ -1,8 +1,11 @@
 package yx.pay.system.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import yx.pay.common.domain.FebsConstant;
+import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.impl.BaseService;
 import yx.pay.system.dao.wx.MerchantApplyMapper;
 import yx.pay.system.domain.wx.MerchantApply;
@@ -17,11 +20,19 @@ import java.util.List;
  * @Version 1.0.0
  */
 @Service
-public class MerchantApplyServiceImpl extends BaseService<MerchantApply> implements MerchantApplyService{
+public class MerchantApplyServiceImpl extends BaseService<MerchantApply> implements MerchantApplyService {
     @Autowired
-    private MerchantApplyMapper  merchantApplyMapper;
-    public List<MerchantApply> findMerchantApplyList(){
-        return merchantApplyMapper.findMerchantApplyList();
+    private MerchantApplyMapper merchantApplyMapper;
+
+    public List<MerchantApply> findMerchantApplyList(QueryRequest request, MerchantApply merchantApply) {
+        if (request.getSortField() != null) {
+            merchantApply.setSortField(request.getSortField());
+            if (StringUtils.equals(FebsConstant.ORDER_ASC, request.getSortOrder()))
+                merchantApply.setSortOrder("asc");
+            else if (StringUtils.equals(FebsConstant.ORDER_DESC, request.getSortOrder()))
+                merchantApply.setSortOrder("desc");
+        }
+        return merchantApplyMapper.findMerchantApplyList(merchantApply);
     }
 
 }

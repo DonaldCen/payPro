@@ -50,11 +50,6 @@ public class MerchantController extends BaseController {
         return super.selectByPageNumSize(request, () -> this.merchantService.findMerchantList(request,merchant));
     }
 
-    public Map<String,Object> merchantAppleList(QueryRequest request, MerchantApply merchantApply){
-//        return super.selectByPageNumSize(request,() -> thi)
-        return null;
-    }
-
     @GetMapping("check/{merchantName}")
     public boolean checkMerchantName(@NotBlank(message = "{required}") @PathVariable String merchantName) {
         return this.merchantService.findByName(merchantName) == null;
@@ -93,7 +88,6 @@ public class MerchantController extends BaseController {
      */
     @Log("上传图片")
     @PostMapping("/upload")
-    @RequiresPermissions("merchant:uploadFile")
     public FebsResponse upload(@RequestParam(value = "file", required = false) MultipartFile multipartFile) throws FebsException{
         log.info("图片大小 {}", multipartFile.getSize());
         try {
@@ -110,7 +104,6 @@ public class MerchantController extends BaseController {
      */
     @Log("商户入驻申请")
     @PostMapping("/merchantApply")
-    @RequiresPermissions("merchant:apply")
     public FebsResponse merchantApply(MerchantRegisterVo vo) throws FebsException{
         return merchantService.merchantApply(vo);
     }

@@ -1,6 +1,8 @@
 package yx.pay.system.service;
 
+import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.IService;
+import yx.pay.system.domain.wx.Merchant;
 import yx.pay.system.domain.wx.MerchantApply;
 
 import java.util.List;
@@ -12,5 +14,5 @@ import java.util.List;
  * @Version 1.0.0
  */
 public interface MerchantApplyService extends IService<MerchantApply> {
-    List<MerchantApply> findMerchantApplyList();
+    List<MerchantApply> findMerchantApplyList(QueryRequest request, MerchantApply merchantApply);
 }

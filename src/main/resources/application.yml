@@ -88,5 +88,6 @@ wx:
 merchant:
   merchantId: 1402784402
   apiKey: 7c91yxeb099af0f90d76c2a76051586c
-#  certPath: D:\abc\1402784402_20190321_cert\apiclient_cert.pem
+  #certPath: E:\1402784402_20190321_cert\apiclient_cert.p12
+  apiv3Key: 8c91yxeb099af0f90d76c2a76051586d
   certPath: /Users/jiangpei/git/payPro/cert/apiclient_cert.p12

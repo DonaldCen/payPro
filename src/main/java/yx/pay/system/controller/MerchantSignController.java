@@ -39,23 +39,21 @@ public class MerchantSignController extends BaseController {
 
     /**
      * 小微商户签约申请
-     *
      */
 //    @Log("小微商户签约申请")
     @PostMapping("/apply")
 //    @RequiresPermissions("merchantSign:apply")
-    public FebsResponse merchantSignApply(String applymentId) throws FebsException{
+    public FebsResponse merchantSignApply(String applymentId) throws FebsException {
         return merchantSignServiceImpl.merchantSignApply(applymentId);
     }
 
     /**
      * 小微商户签约状态更新
-     *
      */
 //    @Log("小微商户签约状态更新")
     @PostMapping("/upStatus")
 //    @RequiresPermissions("merchantSign:upStatus")
-    public FebsResponse merchantSignUpStatus(String applymentId) throws FebsException{
+    public FebsResponse merchantSignUpStatus(String applymentId) throws FebsException {
         return merchantSignServiceImpl.merchantSignUpStatus(applymentId);
     }
 }

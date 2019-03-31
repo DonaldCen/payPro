@@ -61,7 +61,7 @@ public class CommonController extends BaseController {
     }
 
     @PostMapping("getBankListByName")
-    public List<Bank> getBankListByName(Bank bank) {
+    public FebsResponse getBankListByName(Bank bank) {
         try {
             String bankName = bank.getBankName();
             Integer parentId = bank.getParentId();
@@ -69,11 +69,11 @@ public class CommonController extends BaseController {
                 parentId = 0;
             }
             List<Bank> list = bankService.selectByName(bankName, parentId);
-            return list;
+            return new FebsResponse().success(list);
         } catch (Exception e) {
             log.error("getBankListByName error..",e);
         }
-        return new ArrayList<>();
+        return new FebsResponse().fail("getBankListByName failed..");
     }
 
     @GetMapping("getRateList")

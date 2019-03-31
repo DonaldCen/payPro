@@ -209,7 +209,7 @@ public class UserServiceImpl extends BaseService<User> implements UserService {
     @Override
     @Transactional
     public void resetPassword(String[] usernames) throws Exception {
-        for (String username: usernames) {
+        for (String username : usernames) {
 
             Example example = new Example(User.class);
             example.createCriteria().andCondition("username=", username);
