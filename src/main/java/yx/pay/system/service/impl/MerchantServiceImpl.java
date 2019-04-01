@@ -174,6 +174,10 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         String sign_type="HMAC-SHA256";//签名类型
         String business_code=nonce_str;//vo.getBusiness_code();//业务申请编号(直接用随机码)
 
+        // 处理身份证有效时间
+        String[] validTimeStr=vo.getId_card_valid_time().split(",");
+        String id_card_valid_time="[\""+validTimeStr[0]+"\",\""+validTimeStr[1]+"\"]";
+        parampwd.put("id_card_valid_time",id_card_valid_time);
         parampwd.put("version",version);
         parampwd.put("cert_sn",cert_sn);
         parampwd.put("mch_id",mch_id);
