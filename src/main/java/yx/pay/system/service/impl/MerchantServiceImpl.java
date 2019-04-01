@@ -199,6 +199,7 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
         String id_card_name="";//身份证名称
         String id_card_number="";//身份证号
         String account_name="";//开户名称
+        String account_number="";//开户账号
         String contact="";//联系人
         String contact_phone="";//联系人电话
         String contact_email="";//联系人邮箱
@@ -211,6 +212,9 @@ public class MerchantServiceImpl extends BaseService<Merchant> implements Mercha
             }
             if(parampwd.containsKey("account_name")){
                 parampwd.put("account_name", EncryptionUtils.rsaEncryptByCert(parampwd.get("account_name"),original));
+            }
+            if(parampwd.containsKey("account_number")){
+                parampwd.put("account_number", EncryptionUtils.rsaEncryptByCert(parampwd.get("account_number"),original));
             }
             if(parampwd.containsKey("contact")){
                 parampwd.put("contact", EncryptionUtils.rsaEncryptByCert(parampwd.get("contact"),original));
