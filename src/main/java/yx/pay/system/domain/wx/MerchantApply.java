@@ -109,6 +109,8 @@ public class MerchantApply extends BaseEntity {
     private String data_status;//43、数据状态{0 :生效 1：失效}
     @Column(name="apply_desc")
     private String apply_desc;//43、申请说明{ 签名失效、敏感数据加密失效、认证失效、网络失效。。。}
+    @Column(name="sign_url")
+    private String signUrl;
 
 
 

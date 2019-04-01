@@ -47,6 +47,7 @@
         <result column="apply_date"             jdbcType="TIMESTAMP" property="applyDate"/>
         <result column="create_date"            jdbcType="TIMESTAMP" property="createDate"/>
         <result column="apply_desc"             jdbcType="VARCHAR" property="apply_desc"/>
+        <result column="sign_url"             jdbcType="VARCHAR" property="signUrl"/>
 
     </resultMap>
 
@@ -301,6 +302,12 @@
     <update id="updateSubMchIdAndStatus" parameterType="yx.pay.system.domain.wx.MerchantApply">
         UPDATE t_merchant_apply
         set sub_mch_id = #{subMchId}, status = #{status}
+        <if test="signUrl != null">
+            ,sign_url = #{signUrl}
+        </if>
+        <if test="apply_desc != null">
+            ,apply_desc = #{apply_desc}
+        </if>
         where applyment_id = #{applymentID}
     </update>
     <update id="updateStatus" parameterType="yx.pay.system.domain.wx.MerchantApply">

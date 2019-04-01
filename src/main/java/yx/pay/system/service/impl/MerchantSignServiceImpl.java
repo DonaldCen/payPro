@@ -74,12 +74,23 @@ public class MerchantSignServiceImpl extends BaseService<MerchantApply> implemen
             //根据applyment_id更新小微商户号和状态到t_merchant_apply表
             if(SignStatusEnum.TO_BE_SIGNED.getValue().equalsIgnoreCase(state) || SignStatusEnum.FINISH.getValue().equalsIgnoreCase(state)) {
                 log.info("开始更新小微商户号和状态");
-                upNum = updateSubMchIdAndStatus(applymentId, map.get("subMchId"), state);
+                MerchantApply merchantApply = new MerchantApply();
+                merchantApply.setApplymentID(applymentId);
+                merchantApply.setSubMchId(map.get("subMchId"));
+                merchantApply.setSignUrl(map.get("signUrl"));
+                merchantApply.setStatus(state);
+                upNum = updateSubMchIdAndStatus(merchantApply);
             }
             //否则根据applyment_id更新状态到t_merchant_apply表
             else {
                 log.info("开始更新状态");
-                upNum = updateStatus(applymentId, state);
+                MerchantApply merchantApply = new MerchantApply();
+                merchantApply.setApplymentID(applymentId);
+                merchantApply.setStatus(state);
+                if(map.containsKey("auditDetail")){
+                    merchantApply.setApply_desc(map.get("auditDetail"));
+                }
+                upNum = updateSubMchIdAndStatus(merchantApply);
             }
             if(upNum > 0) {
                 log.info("更新状态成功");
@@ -99,11 +110,7 @@ public class MerchantSignServiceImpl extends BaseService<MerchantApply> implemen
         }
     }
 
-    private int updateSubMchIdAndStatus(String applymentId, String subMchId, String status) {
-        MerchantApply merchantApply = new MerchantApply();
-        merchantApply.setApplymentID(applymentId);
-        merchantApply.setSubMchId(subMchId);
-        merchantApply.setStatus(status);
+    private int updateSubMchIdAndStatus(MerchantApply merchantApply) {
         return merchantApplyMapper.updateSubMchIdAndStatus(merchantApply);
     }
 
