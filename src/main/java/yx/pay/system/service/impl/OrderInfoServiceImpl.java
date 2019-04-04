@@ -13,6 +13,7 @@ import yx.pay.common.domain.FebsConstant;
 import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.impl.BaseService;
+import yx.pay.common.utils.PollUtil;
 import yx.pay.common.utils.WxHttpUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.system.dao.wx.OrderInfoMapper;
@@ -157,7 +158,7 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
      * 获取 sub_mch_id 方法
      */
     private String getSubMchId() {
-        return null;
+        return PollUtil.next();
     }
 
     @Override
