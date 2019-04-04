@@ -5,6 +5,7 @@ import com.github.wxpay.sdk.WXPayUtil;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -59,6 +60,19 @@ public class WxUtil {
 
     @Autowired
     public WxConfig wxConfig;
+
+    //服务器节点id
+    @Value("${febs.nodeId}")
+    private String nodeId;
+
+    //最大序列号
+    private static final int maxSeq = 9999;
+    //序列号长度
+    private static final int seqLength = String.valueOf(maxSeq).length();
+    //当前序列号
+    private static int currentSeq = 1;
+
+
 
     public void commonParams(SortedMap<String, String> packageParams) {
         // 账号信息
@@ -190,6 +204,7 @@ public class WxUtil {
 
     /**
      * base payType,create order_no
+     * order_no规则：1位PayType + 17位时间 + 2位服务器节点id + 4位序列号 = 24位，可以支持同一毫秒9999个并发
      * @param payType
      * @return
      */
@@ -201,6 +216,23 @@ public class WxUtil {
             sb.append(ALI_PAY_PREFIX);
         }
         sb.append(dateFormat.format(new Date()));
+        sb.append(nodeId);
+        sb.append(this.getSequence());
         return sb.toString();
+    }
+
+    private static synchronized String getSequence() {
+        int tmpSeq = currentSeq;
+        if(tmpSeq < maxSeq) {
+            currentSeq++;
+        }
+        else {
+            currentSeq = 1;
+        }
+        String sCurrentSeq = String.valueOf(tmpSeq);
+        while(sCurrentSeq.length() < seqLength) {
+            sCurrentSeq = "0" + sCurrentSeq;
+        }
+        return sCurrentSeq;
     }
 }
