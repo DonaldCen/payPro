@@ -23,6 +23,8 @@ import yx.pay.system.service.MerchantService;
 import yx.pay.system.service.OrderInfoService;
 import yx.pay.system.service.WxPayService;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @Description
  * @Author <a href="mailto:cenyingqiang@wxchina.com">yingqiang.Cen</a>
@@ -41,7 +43,6 @@ public class WxPayServiceImpl implements WxPayService {
     private OrderInfoService orderInfoService;
     @Autowired
     private MerchantService merchantService;
-
 
     /**
      * 生成二维码图片

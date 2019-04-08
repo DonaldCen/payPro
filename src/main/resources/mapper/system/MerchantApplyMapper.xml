@@ -326,4 +326,9 @@
         ) a
 
     </select>
+
+    <select id="getSubMchIdList" parameterType="string" resultType="string">
+        SELECT a.sub_mch_id from t_merchant_apply a where a.status = #{finishStatus}
+        and a.sub_mch_id is not null
+    </select>
 </mapper>

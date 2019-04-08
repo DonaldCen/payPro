@@ -4,6 +4,7 @@ import yx.pay.common.domain.QueryRequest;
 import yx.pay.common.service.IService;
 import yx.pay.system.domain.wx.Merchant;
 import yx.pay.system.domain.wx.MerchantApply;
+import yx.pay.system.domain.wx.SignStatusEnum;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ import java.util.List;
  */
 public interface MerchantApplyService extends IService<MerchantApply> {
     List<MerchantApply> findMerchantApplyList(QueryRequest request, MerchantApply merchantApply);
+
+    List<String> getSubMchIdList(String finishStatus);
 }

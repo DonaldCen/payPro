@@ -36,4 +36,6 @@ public interface MerchantApplyMapper extends MyMapper<MerchantApply> {
     int updateSubMchIdAndStatus(MerchantApply merchantApply);
 
     int updateStatus(MerchantApply merchantApply);
+
+    List<String> getSubMchIdList(String finishStatus);
 }

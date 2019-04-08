@@ -75,11 +75,20 @@ public class OrderInfoVo {
     private String body;//String(128)
     @NotBlank(message = "{required}")
     private Integer total_fee;//总金额，单位为分
+    private String chlMerchanNo;//商家编号
 
     private String ip;
 
     public String getIp() {
         return ip;
+    }
+
+    public String getChlMerchanNo() {
+        return chlMerchanNo;
+    }
+
+    public void setChlMerchanNo(String chlMerchanNo) {
+        this.chlMerchanNo = chlMerchanNo;
     }
 
     public void setIp(String ip) {

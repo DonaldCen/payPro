@@ -1,5 +1,6 @@
 package yx.pay.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 
@@ -17,13 +18,9 @@ import yx.pay.common.utils.PollUtil;
 import yx.pay.common.utils.WxHttpUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.system.dao.wx.OrderInfoMapper;
-import yx.pay.system.domain.wx.MerchantServerConfig;
-import yx.pay.system.domain.wx.OrderInfo;
-import yx.pay.system.domain.wx.OrderInfoVo;
-import yx.pay.system.domain.wx.OrderStatusEnum;
-import yx.pay.system.domain.wx.PayTypeEnum;
-import yx.pay.system.domain.wx.ProductInfo;
-import yx.pay.system.domain.wx.WxConfig;
+import yx.pay.system.domain.wx.*;
+import yx.pay.system.service.ChannelMerchantService;
+import yx.pay.system.service.MerchantApplyService;
 import yx.pay.system.service.OrderInfoService;
 
 import java.util.ArrayList;
@@ -50,35 +47,45 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
     private WxConfig wxConfig;
     @Autowired
     public MerchantServerConfig merchantServerConfig;
+    @Autowired
+    private MerchantApplyService merchantApplyService;
+    @Autowired
+    private ChannelMerchantService channelMerchantService;
+
     @Override
     public int createOrderInfoByUserId(OrderInfo info) {
         return orderInfoMapper.createOrderInfoByUserId(info);
     }
+
     /**
-     *  1.创建订单
-     *  2.调用微信接口
-     *  3.生成微信支付码
+     * 1.创建订单
+     * 2.调用微信接口
+     * 3.生成微信支付码
      */
     @Override
     public FebsResponse createOrderInfo(OrderInfoVo orderInfoVo) throws Exception {
         String orderNo = wxUtil.createOrderNoByPayType(PayTypeEnum.WECHAT_PAY);
-        saveOrderInfo(orderInfoVo,orderNo);
-        return pay(orderInfoVo,orderNo);
+        saveOrderInfo(orderInfoVo, orderNo);
+        return pay(orderInfoVo, orderNo);
     }
 
-    private FebsResponse pay(OrderInfoVo orderInfoVo,String orderNo) throws Exception {
+    private Integer getUserId(String chlMerchanNo) {
+        return channelMerchantService.getIdByMerchantNo(chlMerchanNo);
+    }
+
+    private FebsResponse pay(OrderInfoVo orderInfoVo, String orderNo) throws Exception {
         FebsResponse response = new FebsResponse();
-        SortedMap<String, String> param = wechatPay(orderInfoVo,orderNo);
+        SortedMap<String, String> param = wechatPay(orderInfoVo, orderNo);
         String requestXml = WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey());
         String resXml = WxHttpUtil.postData(WxUtil.UNIFIED_ORDER_URL, requestXml);
         Map<String, String> responseMap = WXPayUtil.xmlToMap(resXml);
         //判断交易状态
-        if("FAIL".equalsIgnoreCase(responseMap.get("return_code"))) {
+        if ("FAIL".equalsIgnoreCase(responseMap.get("return_code"))) {
             response.fail(responseMap.get("return_msg"));
             return response;
         }
         //判断交易状态
-        if("FAIL".equalsIgnoreCase(responseMap.get("result_code"))) {
+        if ("FAIL".equalsIgnoreCase(responseMap.get("result_code"))) {
             response.fail(responseMap.get("err_code_des"));
             return response;
         }
@@ -86,20 +93,29 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         resultMap.put("trade_type", responseMap.get("trade_type"));
         resultMap.put("prepay_id", responseMap.get("prepay_id"));
         resultMap.put("code_url", responseMap.get("code_url"));
+        log.info("result=[{}]", JSON.toJSON(resultMap));
         response.success(resultMap);
         return response;
     }
 
-    private void saveOrderInfo(OrderInfoVo orderInfoVo,String orderNo){
+    private void saveOrderInfo(OrderInfoVo orderInfoVo, String orderNo) throws Exception {
         double totalFee = orderInfoVo.getTotal_fee() * 100;
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setPayType(PayTypeEnum.WECHAT_PAY.getType());
         orderInfo.setStatus(OrderStatusEnum.PREPAYMENT.getIndex());
         orderInfo.setOrderNo(orderNo);
         orderInfo.setTotalFee(totalFee);
+        String merchantNo = orderInfoVo.getChlMerchanNo();
+        orderInfo.setMchNo(merchantNo);
+        Integer userId = getUserId(merchantNo);
+        if (userId == null) {
+            throw new Exception("please check chlMerchanNo !");
+        }
+        orderInfo.setUserId(userId);
+        orderInfoMapper.insert(orderInfo);
     }
 
-    private SortedMap<String, String> wechatPay(OrderInfoVo orderInfoVo,String orderNo){
+    private SortedMap<String, String> wechatPay(OrderInfoVo orderInfoVo, String orderNo) {
         /**
          * 公众账号ID	appid	是	String(32)	wx8888888888888888	微信分配的公众账号ID
          * 商户号	mch_id	是	String(32)	1900000109	微信支付分配的商户号
@@ -130,26 +146,26 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
          */
         SortedMap<String, String> param = new TreeMap<>();
         //appid
-        param.put("appid",wxConfig.getAppId());
+        param.put("appid", wxConfig.getAppId());
         //mch_id
-        param.put("mch_id",merchantServerConfig.getMerchantId());
+        param.put("mch_id", merchantServerConfig.getMerchantId());
         String sub_mch_id = getSubMchId();
         //sub_mch_id
-        param.put("sub_mch_id",sub_mch_id);
+        param.put("sub_mch_id", sub_mch_id);
         //nonce_str
         param.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
         //body
-        param.put("body",orderInfoVo.getBody());
+        param.put("body", orderInfoVo.getBody());
         //out_trade_no
-        param.put("out_trade_no",orderNo);
+        param.put("out_trade_no", orderNo);
         //total_fee
-        param.put("total_fee",String.valueOf(orderInfoVo.getTotal_fee()));
+        param.put("total_fee", String.valueOf(orderInfoVo.getTotal_fee()));
         //spbill_create_ip
-        param.put("spbill_create_ip",orderInfoVo.getIp());
+        param.put("spbill_create_ip", orderInfoVo.getIp());
         //notify_url
-        param.put("notify_url",wxConfig.getNotifyUrl());
+        param.put("notify_url", wxConfig.getNotifyUrl());
         //trade_type
-        param.put("trade_type","NATIVE");
+        param.put("trade_type", "NATIVE");
 
         return param;
     }
@@ -158,6 +174,8 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
      * 获取 sub_mch_id 方法
      */
     private String getSubMchId() {
+        List<String> subMchIdList = merchantApplyService.getSubMchIdList(SignStatusEnum.FINISH.getValue());
+        PollUtil.setAll(subMchIdList);
         return PollUtil.next();
     }
 

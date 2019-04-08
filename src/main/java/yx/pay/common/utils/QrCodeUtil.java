@@ -66,6 +66,7 @@ public class QrCodeUtil {
         final String separator = File.separator;
         sb.append(config.getQrCodeUrl()).append(separator);
         sb.append(QR_CODE_PIC_PREFIX).append(userId);
+        sb.append(".png");
         return sb.toString();
     }
     //读取二维码

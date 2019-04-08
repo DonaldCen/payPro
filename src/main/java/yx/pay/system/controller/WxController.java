@@ -3,45 +3,28 @@ package yx.pay.system.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.wxpay.sdk.WXPayUtil;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import yx.pay.common.domain.FebsResponse;
+import yx.pay.common.utils.IPUtil;
+import yx.pay.common.utils.WxUtil;
+import yx.pay.common.utils.XMLUtil;
+import yx.pay.system.domain.wx.OrderInfoVo;
+import yx.pay.system.service.OrderInfoService;
+import yx.pay.system.service.ProductService;
+import yx.pay.system.service.WxPayService;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import lombok.extern.slf4j.Slf4j;
-import yx.pay.common.domain.FebsResponse;
-import yx.pay.common.utils.IPUtil;
-import yx.pay.common.utils.QrCodeUtil;
-import yx.pay.common.utils.WxUtil;
-import yx.pay.common.utils.XMLUtil;
-import yx.pay.system.domain.wx.OrderInfo;
-import yx.pay.system.domain.wx.OrderInfoVo;
-import yx.pay.system.domain.wx.ProductInfo;
-import yx.pay.system.domain.wx.WxConfig;
-import yx.pay.system.service.OrderInfoService;
-import yx.pay.system.service.ProductService;
-import yx.pay.system.service.WxPayService;
 
 /**
  * @Description
@@ -83,7 +66,7 @@ public class WxController {
     }
 
     @PostMapping("pay")
-    public FebsResponse pay(OrderInfoVo orderInfoVo,HttpServletRequest request) throws Exception {
+    public FebsResponse pay(@RequestBody OrderInfoVo orderInfoVo,HttpServletRequest request) throws Exception {
         orderInfoVo.setIp(IPUtil.getIpAddr(request));
         return orderInfoService.createOrderInfo(orderInfoVo);
     }
