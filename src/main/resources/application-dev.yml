@@ -1,0 +1,98 @@
+#120.79.59.22环境配置
+server:
+  port: 9527
+
+spring:
+  security:
+    user:
+      name: admin
+      password: admin
+  datasource:
+    url: jdbc:mysql://127.0.0.1/yx?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: yx-dev
+    password: yx@dev
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      connection-test-query: select 1
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      pool-name: FebsHikariCP
+  aop:
+    proxy-target-class: true
+  mvc:
+    static-path-pattern: /img/**
+  resources:
+    static-locations: file:E://pic
+
+  messages:
+    encoding: utf-8
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: fw@191301
+    jedis:
+      pool:
+        min-idle: 8
+        max-idle: 500
+        max-active: 2000
+        max-wait: 10000
+    timeout: 10
+
+mybatis:
+  type-aliases-package: yx.pay.system.domain,yx.pay.job.domain
+  mapper-locations: classpath:mapper/*/*.xml
+  configuration:
+    jdbc-type-for-null: null
+
+mapper:
+  mappers: yx.pay.common.config.MyMapper
+  not-empty: false
+  identity: MYSQL
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ['httptrace', 'metrics']
+
+febs:
+  # 是否在控制台打印 SQL
+  showsql: true
+  # 是否异步记录用户操作日志
+  openAopLog: true
+  # 单次最大批量入库数量
+  max:
+    batch:
+      insert:
+        num: 1000
+  shiro:
+    # 后端免认证接口 url
+    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**,/api/wx/**,/img/**
+    # token有效期，单位秒
+    jwtTimeOut: 86400
+  nodeId: 01
+
+wx:
+  appId: wx62eb98733173fa88
+  appSecret: 7c91fbeb099af0f90d76c2a76051586c
+  mchId: 1402784402
+  qrCodeUrl: /var/local
+  notifyUrl: http://120.79.59.22/api/wx/pay
+merchant:
+  merchantId: 1402784402
+  apiKey: 7c91yxeb099af0f90d76c2a76051586c
+  certPath: /var/local/certfile/apiclient_cert.p12
+  apiv3Key: 8c91yxeb099af0f90d76c2a76051586d
