@@ -44,6 +44,14 @@ public class WxPayServiceImpl implements WxPayService {
     @Autowired
     private MerchantService merchantService;
 
+//    @PostConstruct
+    private void init(){
+        String qrInfo = "weixin://wxpay/bizpayurl?pr=fULKZVQ";
+        String url = qrCodeUtil.getQrCodePicName(String.valueOf(32332));
+        //生成付款二维码图片
+        qrCodeUtil.createQrCode(qrInfo, url);
+    }
+
     /**
      * 生成二维码图片
      */

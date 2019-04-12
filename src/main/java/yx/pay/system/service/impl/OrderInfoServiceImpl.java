@@ -66,16 +66,27 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
     public FebsResponse createOrderInfo(OrderInfoVo orderInfoVo) throws Exception {
         String orderNo = wxUtil.createOrderNoByPayType(PayTypeEnum.WECHAT_PAY);
         saveOrderInfo(orderInfoVo, orderNo);
-        return pay(orderInfoVo, orderNo);
+        return wxPay(orderInfoVo, orderNo,null,WxPayTypeEnum.NATIVE.getType());
+    }
+
+    @Override
+    public FebsResponse jsApiPay(OrderInfoVo orderInfoVo, String openId) throws Exception {
+        String orderNo = wxUtil.createOrderNoByPayType(PayTypeEnum.WECHAT_PAY);
+        saveOrderInfo(orderInfoVo, orderNo);
+        return wxPay(orderInfoVo, orderNo,openId,WxPayTypeEnum.JSAPI.getType());
     }
 
     private Integer getUserId(String chlMerchanNo) {
         return channelMerchantService.getIdByMerchantNo(chlMerchanNo);
     }
-
-    private FebsResponse pay(OrderInfoVo orderInfoVo, String orderNo) throws Exception {
+    private FebsResponse wxPay(OrderInfoVo orderInfoVo, String orderNo,String openId,int payType) throws Exception {
         FebsResponse response = new FebsResponse();
-        SortedMap<String, String> param = wechatPay(orderInfoVo, orderNo);
+        SortedMap<String, String> param = null;
+        if(payType == WxPayTypeEnum.NATIVE.getType()){
+            param = wechatPayNativeModel(orderInfoVo, orderNo);
+        }else if(payType == WxPayTypeEnum.JSAPI.getType()){
+            param = wechatPayJsApiModel(orderInfoVo,orderNo,openId);
+        }
         String requestXml = WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey());
         String resXml = WxHttpUtil.postData(WxUtil.UNIFIED_ORDER_URL, requestXml);
         Map<String, String> responseMap = WXPayUtil.xmlToMap(resXml);
@@ -115,7 +126,29 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         orderInfoMapper.insert(orderInfo);
     }
 
-    private SortedMap<String, String> wechatPay(OrderInfoVo orderInfoVo, String orderNo) {
+    private SortedMap<String, String> wechatPayNativeModel(OrderInfoVo orderInfoVo, String orderNo) {
+        SortedMap<String, String> param = new TreeMap<>();
+        //trade_type
+        param.put("trade_type", "NATIVE");
+        payOrder(orderInfoVo,orderNo,param);
+        return param;
+    }
+    private SortedMap<String, String> wechatPayJsApiModel(OrderInfoVo orderInfoVo, String orderNo,String openId) {
+        SortedMap<String, String> param = new TreeMap<>();
+        //trade_type
+        param.put("trade_type", "JSAPI");
+        // device_info
+        param.put("device_info", "WEB");
+        param.put("openid", openId);
+        payOrder(orderInfoVo,orderNo,param);
+        return param;
+    }
+
+    private String getOpenId(String code) {
+        return null;
+    }
+
+    private SortedMap<String, String> payOrder(OrderInfoVo orderInfoVo, String orderNo,SortedMap<String, String> param) {
         /**
          * 公众账号ID	appid	是	String(32)	wx8888888888888888	微信分配的公众账号ID
          * 商户号	mch_id	是	String(32)	1900000109	微信支付分配的商户号
@@ -144,7 +177,6 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
          * NATIVE -Native支付
          * APP -APP支付
          */
-        SortedMap<String, String> param = new TreeMap<>();
         //appid
         param.put("appid", wxConfig.getAppId());
         //mch_id
@@ -164,11 +196,9 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         param.put("spbill_create_ip", orderInfoVo.getIp());
         //notify_url
         param.put("notify_url", wxConfig.getNotifyUrl());
-        //trade_type
-        param.put("trade_type", "NATIVE");
-
         return param;
     }
+
 
     /**
      * 获取 sub_mch_id 方法

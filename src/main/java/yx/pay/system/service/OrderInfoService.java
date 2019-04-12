@@ -25,5 +25,7 @@ public interface OrderInfoService extends IService<OrderInfo> {
      */
     FebsResponse createOrderInfo(OrderInfoVo orderInfoVo) throws Exception;
 
+    FebsResponse jsApiPay(OrderInfoVo orderInfoVo,String openId) throws Exception;
+
     List<OrderInfo> findOrderList(QueryRequest request, OrderInfo orderInfo);
 }
