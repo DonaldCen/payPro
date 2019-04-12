@@ -90,7 +90,7 @@ wx:
   appSecret: 7c91fbeb099af0f90d76c2a76051586c
   mchId: 1402784402
   qrCodeUrl: /var/local
-  notifyUrl: http://120.79.59.22/api/wx/pay
+  notifyUrl: http://120.79.59.22/api/wx/weixin_notify
 merchant:
   merchantId: 1402784402
   apiKey: 7c91yxeb099af0f90d76c2a76051586c
