@@ -1,10 +1,12 @@
 package yx.pay.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 
 import java.security.MessageDigest;
 
+@Slf4j
 public class MD5Util {
 
 	private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
@@ -56,7 +58,7 @@ public class MD5Util {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(encrypt("mrbird","1234qwer"));
+		log.info(encrypt("mrbird","1234qwer"));
 	}
 
 }

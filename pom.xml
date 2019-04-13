@@ -227,6 +227,13 @@
             <version>1.1</version>
         </dependency>
 
+        <!--weixin -->
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jfinal-weixin</artifactId>
+            <version>1.7</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

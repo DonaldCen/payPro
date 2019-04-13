@@ -1,5 +1,6 @@
 package yx.pay.system.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class CertFicatesServiceImplTest {
     @Autowired
     public CertFicatesService certFicatesService;
@@ -27,9 +29,9 @@ public class CertFicatesServiceImplTest {
     public MerchantServerConfig merchantServerConfig;
     @Test
     public void testGetCertFicates() throws Exception {
-        System.out.println("-----------test-------------");
+        log.info("-----------test-------------");
         certFicatesService.getCertFicates();
-        System.out.println("-----------dddddddddddddddddd-------------");
+        log.info("-----------dddddddddddddddddd-------------");
 
     }
 /*
@@ -38,10 +40,10 @@ public class CertFicatesServiceImplTest {
         try {
             String content = certFicatesService.decryptCertSN("associatedData", "nonce", "cipherText", "apiv3Key");
             String encrypt = EncryptionUtils.rsaEncrypt("我的身份证", content);
-            System.out.println("身份证的密文了:"+encrypt);
+            log.info("身份证的密文了:"+encrypt);
            // log.info("身份证的密文了 {}",encrypt);
         } catch (Exception e) {
-            System.out.println("解密异常啦:"+e);
+            log.info("解密异常啦:"+e);
            // log.error("解密异常啦 {}", e);
         }
     }
@@ -51,9 +53,9 @@ public class CertFicatesServiceImplTest {
         try {
             String content="xxxx";
             String encrypt = EncryptionUtils.rsaEncrypt("我的身份证xxx", merchantServerConfig.getCertPath());
-            System.out.println("身份证的密文了:"+encrypt);
+            log.info("身份证的密文了:"+encrypt);
     } catch (Exception e) {
-        System.out.println("解密异常啦:"+e);
+        log.info("解密异常啦:"+e);
         // log.error("解密异常啦 {}", e);
     }
 

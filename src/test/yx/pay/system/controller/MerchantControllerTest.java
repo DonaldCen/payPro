@@ -1,5 +1,6 @@
 package yx.pay.system.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class MerchantControllerTest {
     @Autowired
     private UploadService uploadService;
@@ -29,6 +31,5 @@ public class MerchantControllerTest {
         File file = new File("D:\\2018手机文件\\pic\\aa.jpg");
         MultipartFile multipartFile = new MockMultipartFile("file", new FileInputStream(file));
         FebsResponse s = uploadService.uploadFile(multipartFile);
-        System.out.println(s);
     }
 }

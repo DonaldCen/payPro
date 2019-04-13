@@ -119,7 +119,7 @@ public class SignUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("MD5 生成结果：" + resultString);
+        log.info("MD5 生成结果：" + resultString);
         return resultString;
     }
     /**
@@ -137,11 +137,11 @@ public class SignUtil {
             //对消息进行UTF-8转化  为了防止中文加密与微信的算法不匹配
             byte[] bytes = sha256_HMAC.doFinal(message.getBytes("UTF-8"));
             hash = byteArrayToHexString(bytes);
-            System.out.println(hash);
+            log.info(hash);
         } catch (Exception e) {
-            System.out.println("Error HmacSHA256 ===========" + e.getMessage());
+            log.info("Error HmacSHA256 ===========" + e.getMessage());
         }
-        System.out.println("Sha256 生成结果：" + hash);
+        log.info("Sha256 生成结果：" + hash);
         return hash;
     }
 }

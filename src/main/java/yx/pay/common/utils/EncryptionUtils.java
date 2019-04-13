@@ -126,7 +126,7 @@ public class EncryptionUtils {
             byte[] test = cipher.doFinal(data.getBytes("utf-8"));
             byte[] bytes = Base64.encodeBase64(test);
             String s = new String(bytes, "utf-8");
-            System.out.println("加密结果【" + s);
+            log.info("加密结果【" + s);
             return s;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

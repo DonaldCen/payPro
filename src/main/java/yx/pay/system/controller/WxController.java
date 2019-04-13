@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import yx.pay.common.domain.FebsResponse;
@@ -177,5 +178,24 @@ public class WxController {
         }
     }
 
+
+    @GetMapping("txt")
+    public String getTxt() throws Exception {
+        File file = ResourceUtils.getFile("classpath:MP_verify_au8scmNSoBdeSF8h.txt");
+        String content = readTxt(file);
+        log.info(content);
+        return content;
+    }
+
+    public String readTxt(File file) throws IOException {
+        String s = "";
+        InputStreamReader in = new InputStreamReader(new FileInputStream(file),"UTF-8");
+        BufferedReader br = new BufferedReader(in);
+        StringBuffer content = new StringBuffer();
+        while ((s=br.readLine())!=null){
+            content = content.append(s);
+        }
+        return content.toString();
+    }
 
 }

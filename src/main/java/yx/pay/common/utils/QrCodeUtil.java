@@ -79,9 +79,9 @@ public class QrCodeUtil {
             Map hints=new HashMap();
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");//设置编码
             Result result= reader.decode(binaryBitmap,hints);
-            System.out.println("解析结果:"+result.toString());
-            System.out.println("二维码格式:"+result.getBarcodeFormat());
-            System.out.println("二维码文本内容:"+result.getText());
+            log.info("解析结果:"+result.toString());
+            log.info("二维码格式:"+result.getBarcodeFormat());
+            log.info("二维码文本内容:"+result.getText());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
