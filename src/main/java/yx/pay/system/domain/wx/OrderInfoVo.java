@@ -77,6 +77,15 @@ public class OrderInfoVo {
     private Integer total_fee;//总金额，单位为分
     private String chlMerchanNo;//商家编号
     private String openId;
+    private String code;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getOpenId() {
         return openId;

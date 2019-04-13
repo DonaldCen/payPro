@@ -3,6 +3,7 @@ package yx.pay.system.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.wxpay.sdk.WXPayUtil;
+import com.jfinal.weixin.sdk.api.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.JDOMException;
@@ -14,7 +15,9 @@ import yx.pay.common.domain.FebsResponse;
 import yx.pay.common.utils.IPUtil;
 import yx.pay.common.utils.WxUtil;
 import yx.pay.common.utils.XMLUtil;
+import yx.pay.common.wechat.api.OAuthApi;
 import yx.pay.system.domain.wx.OrderInfoVo;
+import yx.pay.system.domain.wx.WxConfig;
 import yx.pay.system.service.OrderInfoService;
 import yx.pay.system.service.ProductService;
 import yx.pay.system.service.WxPayService;
@@ -46,6 +49,8 @@ public class WxController {
     private OrderInfoService orderInfoService;
     @Autowired
     private WxUtil wxUtil;
+    @Autowired
+    private WxConfig wxConfig;
 
     /**
      * 指定地方，生成url,然后存储，然后展示
@@ -71,6 +76,19 @@ public class WxController {
         orderInfoVo.setIp(IPUtil.getIpAddr(request));
         return orderInfoService.createOrderInfo(orderInfoVo);
     }
+
+    @PostMapping("jsapi")
+    public FebsResponse jsapi(@RequestBody OrderInfoVo orderInfoVo,HttpServletRequest request) throws Exception {
+        orderInfoVo.setIp(IPUtil.getIpAddr(request));
+        String openid = null;
+        ApiResult apiResult = OAuthApi.getOpenId(wxConfig.getAppId(), wxConfig.getAppSecret(), orderInfoVo.getCode());
+        if(null == apiResult || StringUtils.isBlank(apiResult.getStr("openid"))){
+            return new FebsResponse().fail("网络错误");
+        }
+        openid = apiResult.getStr("openid");
+        return orderInfoService.jsApiPay(orderInfoVo,openid);
+    }
+
 
     @RequestMapping(value="weixin_notify",method=RequestMethod.POST)
     public void weixin_notify(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -176,26 +194,6 @@ public class WxController {
             }
             packageParams.put(parameter, v);
         }
-    }
-
-
-    @GetMapping("txt")
-    public String getTxt() throws Exception {
-        File file = ResourceUtils.getFile("classpath:MP_verify_au8scmNSoBdeSF8h.txt");
-        String content = readTxt(file);
-        log.info(content);
-        return content;
-    }
-
-    public String readTxt(File file) throws IOException {
-        String s = "";
-        InputStreamReader in = new InputStreamReader(new FileInputStream(file),"UTF-8");
-        BufferedReader br = new BufferedReader(in);
-        StringBuffer content = new StringBuffer();
-        while ((s=br.readLine())!=null){
-            content = content.append(s);
-        }
-        return content.toString();
     }
 
 }
