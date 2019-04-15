@@ -81,16 +81,20 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**,/api/wx/**,/img/**,/wx,/MP_verify_au8scmNSoBdeSF8h.txt,/toPay,/payPage,/jquery.js
+    anonUrl: /sys/login,/sys/logout/**,/sys/regist,/sys/user/check/**,/sys/wx/**,/sys/merchantSign/**,/api/wx/**,/img/**,/wx,/MP_verify_TWD7pen1yswv10ba.txt,/toPay,/payPage,/jquery.js
     # token有效期，单位秒
     jwtTimeOut: 86400
   nodeId: 01
 
 wx:
-  #appId: wx62eb98733173fa88
-  appId: wx8d9b1c87602b9a61
-  #appSecret: 7c91fbeb099af0f90d76c2a76051586c
-  appSecret: b79a9853fb769304dba81e980d957abe
+  # 银兴充电公众号
+  appId: wx62eb98733173fa88
+  # 新银兴公众号
+  #appId: wx8d9b1c87602b9a61
+  # 银兴充电公众号
+  appSecret: 7c91fbeb099af0f90d76c2a76051586c
+  # 新银兴公众号
+  #appSecret: b79a9853fb769304dba81e980d957abe
   mchId: 1402784402
   qrCodeUrl: E:\\
   notifyUrl: http://localhost:9527/api/wx/weixin_notify

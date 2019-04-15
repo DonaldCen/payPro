@@ -30,7 +30,7 @@ public class WxCheckController {
     @Autowired
     private WxConfig wxConfig;
 
-    @RequestMapping({"MP_verify_au8scmNSoBdeSF8h.txt"})
+    @RequestMapping({"MP_verify_TWD7pen1yswv10ba.txt"})
     public void getTxt(HttpServletResponse response) throws Exception {
         File file = ResourceUtils.getFile("classpath:MP_verify_au8scmNSoBdeSF8h.txt");
         String content = readTxt(file);

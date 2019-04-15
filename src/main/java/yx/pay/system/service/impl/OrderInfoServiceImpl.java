@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 
+import com.jfinal.weixin.sdk.kit.PaymentKit;
+import com.jfinal.weixin.sdk.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,10 +84,11 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
     private FebsResponse wxPay(OrderInfoVo orderInfoVo, String orderNo,String openId,int payType) throws Exception {
         FebsResponse response = new FebsResponse();
         SortedMap<String, String> param = null;
+        String non = UUID.randomUUID().toString().replace("-", "");
         if(payType == WxPayTypeEnum.NATIVE.getType()){
-            param = wechatPayNativeModel(orderInfoVo, orderNo);
+            param = wechatPayNativeModel(orderInfoVo, orderNo,non);
         }else if(payType == WxPayTypeEnum.JSAPI.getType()){
-            param = wechatPayJsApiModel(orderInfoVo,orderNo,openId);
+            param = wechatPayJsApiModel(orderInfoVo,orderNo,openId,non);
         }
         String requestXml = WXPayUtil.generateSignedXml(param, merchantServerConfig.getApiKey());
         String resXml = WxHttpUtil.postData(WxUtil.UNIFIED_ORDER_URL, requestXml);
@@ -104,11 +107,31 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         resultMap.put("trade_type", responseMap.get("trade_type"));
         resultMap.put("prepay_id", responseMap.get("prepay_id"));
         resultMap.put("code_url", responseMap.get("code_url"));
+        String result = sendWeixinPayPageParam(orderNo,non,responseMap.get("prepay_id"));
         log.info("result=[{}]", JSON.toJSON(resultMap));
-        response.success(resultMap);
+        response.success(result);
         return response;
     }
 
+    //传递回微信支付页面的必需参数 appId timeStamp nonceStr package signType
+    public String sendWeixinPayPageParam(String out_trade_no, String noncestr,String prepay_id) {
+        String resultString;
+        SortedMap<String, String> finalpackage = new TreeMap<String, String>();
+        finalpackage.put("appId", wxConfig.getAppId());
+        finalpackage.put("timeStamp", getTimeStamp());
+        finalpackage.put("nonceStr", noncestr);
+        finalpackage.put("package", "prepay_id="+prepay_id);
+        finalpackage.put("signType", "MD5");
+        String finalsign = PaymentKit.createSign(finalpackage, merchantServerConfig.getApiKey());
+        finalpackage.put("sign", finalsign);
+        finalpackage.put("out_trade_no", out_trade_no);
+        resultString = JsonUtils.toJson(finalpackage);
+        return resultString;
+    }
+
+    public String getTimeStamp() {
+        return String.valueOf(System.currentTimeMillis() / 1000);
+    }
     private void saveOrderInfo(OrderInfoVo orderInfoVo, String orderNo) throws Exception {
         double totalFee = orderInfoVo.getTotal_fee() * 100;
         OrderInfo orderInfo = new OrderInfo();
@@ -126,21 +149,21 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         orderInfoMapper.insert(orderInfo);
     }
 
-    private SortedMap<String, String> wechatPayNativeModel(OrderInfoVo orderInfoVo, String orderNo) {
+    private SortedMap<String, String> wechatPayNativeModel(OrderInfoVo orderInfoVo, String orderNo,String nonceStr) {
         SortedMap<String, String> param = new TreeMap<>();
         //trade_type
         param.put("trade_type", "NATIVE");
-        payOrder(orderInfoVo,orderNo,param);
+        payOrder(orderInfoVo,orderNo,nonceStr,param);
         return param;
     }
-    private SortedMap<String, String> wechatPayJsApiModel(OrderInfoVo orderInfoVo, String orderNo,String openId) {
+    private SortedMap<String, String> wechatPayJsApiModel(OrderInfoVo orderInfoVo, String orderNo,String openId,String non) {
         SortedMap<String, String> param = new TreeMap<>();
         //trade_type
         param.put("trade_type", "JSAPI");
         // device_info
         param.put("device_info", "WEB");
         param.put("openid", openId);
-        payOrder(orderInfoVo,orderNo,param);
+        payOrder(orderInfoVo,orderNo,non,param);
         return param;
     }
 
@@ -148,7 +171,7 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         return null;
     }
 
-    private SortedMap<String, String> payOrder(OrderInfoVo orderInfoVo, String orderNo,SortedMap<String, String> param) {
+    private SortedMap<String, String> payOrder(OrderInfoVo orderInfoVo, String orderNo,String nonceStr,SortedMap<String, String> param) {
         /**
          * 公众账号ID	appid	是	String(32)	wx8888888888888888	微信分配的公众账号ID
          * 商户号	mch_id	是	String(32)	1900000109	微信支付分配的商户号
@@ -185,7 +208,7 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         //sub_mch_id
         param.put("sub_mch_id", sub_mch_id);
         //nonce_str
-        param.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
+        param.put("nonce_str", nonceStr);
         //body
         param.put("body", orderInfoVo.getBody());
         //out_trade_no
@@ -193,7 +216,7 @@ public class OrderInfoServiceImpl extends BaseService<OrderInfo> implements Orde
         //total_fee
         param.put("total_fee", String.valueOf(orderInfoVo.getTotal_fee()));
         //spbill_create_ip
-        param.put("spbill_create_ip", orderInfoVo.getIp());
+        param.put("spbill_create_ip", "116.22.197.15");
         //notify_url
         param.put("notify_url", wxConfig.getNotifyUrl());
         return param;

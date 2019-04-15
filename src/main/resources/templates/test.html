@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>测试支付</title>
 </head>
-<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery
-/jquery-1.4.min.js"></script>
+<script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <body>
     <div>
         <input id="money"/>
@@ -13,78 +13,83 @@
     </div>
 </body>
 <script>
-    $(function () {
-        console.log("wxOrder");
-        function wxOrder(){
-
-            var money = $("#money").val();
-            var code = getCode();
-            var action = 'http://188n94a573.imwork.net/api/wx/jsapi';
-            $.ajax({
-                type : "POST",
-                url : action,
-                async : false,//同步加载数据。发送请求时锁住浏览器。
-                data : {
-                    code : code,
-                    money:money
-                },
-                success : function(msg) {
-                    var flag = msg.resultcode;
-                    var data = msg.data;
-                    if(flag==0){
-                        callpay(data);
-                    }else{
-                        alert(data);
-                    }
-                }
-            });
-        }
-
-        //调用网页支付框
-        function callpay(sJson) {
-            if (typeof WeixinJSBridge == "undefined"){
-                if( document.addEventListener ){
-                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
-                }else if (document.attachEvent){
-                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
-                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+    function wxOrder(){
+        var money = $("#money").val();
+        var code = getCode();
+        var action = 'http://188n94a573.imwork.net/api/wx/jsapi';
+        $.ajax({
+            type : "POST",
+            url : action,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(testData(code,money)),
+            dataType: "json",
+            success : function(msg) {
+                var flag = msg.code;
+                var msg1= msg.msg;
+                var data = msg.data;
+                alert("flag="+flag+",msg="+msg1+",data="+data);
+                if(flag==0){
+                    callpay(data);
+                }else{
+                    alert(data);
                 }
             }
-            var obj = eval('(' + sJson + ')');
-            WeixinJSBridge.invoke('getBrandWCPayRequest', {
-                "appId" : obj.appId,
-                "timeStamp" : obj.timeStamp,
-                "nonceStr" : obj.nonceStr,
-                "package" : obj.package,
-                "signType" : "MD5",
-                "paySign" : obj.sign
-            }, function(res) {
-                WeixinJSBridge.log(res.err_msg);
-                if (res.err_msg == "get_brand_wcpay_request:ok") {
-                    alert("微信支付成功!请留意短信或者到查询页查询,谢谢！");
-                } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
-                    alert("取消");
-                } else {
-                    var tip = res.err_code + res.err_desc + res.err_msg;
-                    alert(tip);
-                }
-            });
-        }
-        //获取code方法
-        function getCode(){
-            var nowUrl = window.location.href;
-            var code = "";
-            if(nowUrl.indexOf("?") != -1){
-                var url = location.search;
-                var str = url.split("&");
-                var codeArray = str[0].split("=");
-                code = codeArray[1];
-            }else{
-                var arr = nowUrl.split("/");
-                code = arr[arr.length-1];
+        });
+    }
+
+    //调用网页支付框
+    function callpay(sJson) {
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
             }
-            return code;
         }
-    })
+        var obj = eval('(' + sJson + ')');
+        WeixinJSBridge.invoke('getBrandWCPayRequest', {
+            "appId" : obj.appId,
+            "timeStamp" : obj.timeStamp,
+            "nonceStr" : obj.nonceStr,
+            "package" : obj.package,
+            "signType" : "MD5",
+            "paySign" : obj.sign
+        }, function(res) {
+            WeixinJSBridge.log(res.err_msg);
+            if (res.err_msg == "get_brand_wcpay_request:ok") {
+                alert("微信支付成功!请留意短信或者到查询页查询,谢谢！");
+            } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
+                alert("取消");
+            } else {
+                var tip = res.err_code + res.err_desc + res.err_msg;
+                alert(tip);
+            }
+        });
+    }
+    function testData(code,money) {
+        var json ={
+            "code":code,
+            "total_fee":money,
+            "chlMerchanNo":"20190408001",
+            "body":"测试支付-锋威"
+        }
+        return json;
+    }
+    //获取code方法
+    function getCode(){
+        var nowUrl = window.location.href;
+        var code = "";
+        if(nowUrl.indexOf("?") != -1){
+            var url = location.search;
+            var str = url.split("&");
+            var codeArray = str[0].split("=");
+            code = codeArray[1];
+        }else{
+            var arr = nowUrl.split("/");
+            code = arr[arr.length-1];
+        }
+        return code;
+    }
 </script>
 </html>
