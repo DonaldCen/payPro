@@ -39,4 +39,5 @@ public class MerchantApplyServiceImpl extends BaseService<MerchantApply> impleme
     public List<String> getSubMchIdList(String finishStatus) {
         return merchantApplyMapper.getSubMchIdList(finishStatus);
     }
+
 }

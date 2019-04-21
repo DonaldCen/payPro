@@ -1,5 +1,6 @@
 package yx.pay.system.dao.wx;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,11 +14,11 @@ import yx.pay.system.domain.wx.Merchant;
 public interface MerchantMapper extends MyMapper<Merchant> {
     void updateMerchantQrUrl(Merchant merchant);
 
-    List<Merchant> findMerchantList(Merchant merchant);
+    List<Merchant> findMerchantList(@Param("merchant")Merchant merchant);
 
     Merchant findByName(String merchantName);
 
-    void addMerchant(@Valid Merchant merchant);
+    void addMerchant(Merchant merchant);
 
-    void updateMerchant(@Valid Merchant merchant);
+    void updateMerchant(Merchant merchant);
 }

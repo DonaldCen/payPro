@@ -1,5 +1,6 @@
 package yx.pay.system.dao.wx;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 import yx.pay.common.config.MyMapper;
 import yx.pay.system.domain.wx.MerchantApply;
@@ -13,7 +14,7 @@ import java.util.List;
 @Component
 public interface MerchantApplyMapper extends MyMapper<MerchantApply> {
 
-    List<MerchantApply> findMerchantApplyList(MerchantApply merchantApply);
+    List<MerchantApply> findMerchantApplyList(@Param("merchantApply") MerchantApply merchantApply);
 
     MerchantApply findByName(String businessCode);
 

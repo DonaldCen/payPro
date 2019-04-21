@@ -55,6 +55,18 @@
     <select id="findMerchantApplyList" resultMap="MerchantApplyResultMap">
         select a.*,b.bank_name,c.rate from t_merchant_apply a,t_bank_info b,t_rate c where a.bank_id=b.id and a.rate_id=c.id
             and data_status=0
+        <if test="merchantApply.merchantShortName != null and merchantApply.merchantShortName !=''">
+            And a.merchant_shortname like concat(concat('%',#{merchantApply.merchantShortName}),'%')
+        </if>
+        <if test="merchantApply.status != null and merchantApply.status !='-1'">
+            And a.status = #{merchantApply.status}
+        </if>
+        <if test="merchantApply.createTimeFrom != null and merchantApply.createTimeFrom !=''">
+            And a.create_date &gt; #{merchantApply.createTimeFrom}
+        </if>
+        <if test="merchantApply.createTimeTo!= null and merchantApply.createTimeTo !=''">
+            And a.create_date &lt; #{merchantApply.createTimeTo}
+        </if>
         order by a.create_date DESC
     </select>
 <!---

@@ -15,7 +15,9 @@ import java.util.List;
  * @Version 1.0.0
  */
 public interface MerchantApplyService extends IService<MerchantApply> {
+
     List<MerchantApply> findMerchantApplyList(QueryRequest request, MerchantApply merchantApply);
 
     List<String> getSubMchIdList(String finishStatus);
+
 }
