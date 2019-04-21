@@ -86,13 +86,13 @@ febs:
   nodeId: 01
 
 wx:
-  appId: wx62eb98733173fa88
-  appSecret: 7c91fbeb099af0f90d76c2a76051586c
-  mchId: 1402784402
+  appId: xxxx
+  appSecret: xxx
+  mchId: xxxx
   qrCodeUrl: /var/local
-  notifyUrl: http://120.79.59.22/api/wx/weixin_notify
+  notifyUrl: http://xxxx/api/wx/weixin_notify
 merchant:
-  merchantId: 1402784402
-  apiKey: 7c91yxeb099af0f90d76c2a76051586c
-  certPath: /var/local/certfile/apiclient_cert.p12
-  apiv3Key: 8c91yxeb099af0f90d76c2a76051586d
+  merchantId: xxx
+  apiKey: xxxx
+  certPath: xxxxx
+  apiv3Key: xxxxx

@@ -88,19 +88,19 @@ febs:
 
 wx:
   # 银兴充电公众号
-  appId: wx62eb98733173fa88
+  appId: xxxxx
   # 新银兴公众号
-  #appId: wx8d9b1c87602b9a61
+  #appId: xxxxx
   # 银兴充电公众号
-  appSecret: 7c91fbeb099af0f90d76c2a76051586c
+  appSecret: xxxxxxx
   # 新银兴公众号
-  #appSecret: b79a9853fb769304dba81e980d957abe
-  mchId: 1402784402
+  #appSecret: xxxx
+  mchId: xxxx
   qrCodeUrl: E:\\
   notifyUrl: http://localhost:9527/api/wx/weixin_notify
 merchant:
-  merchantId: 1402784402
-  apiKey: 7c91yxeb099af0f90d76c2a76051586c
-  certPath: E:\1402784402_20190321_cert\apiclient_cert.p12
-  apiv3Key: 8c91yxeb099af0f90d76c2a76051586d
-  #certPath: /Users/jiangpei/git/payPro/cert/apiclient_cert.p12
+  merchantId: xxx
+  apiKey: xxxxx
+  certPath: xxxxx
+  apiv3Key: xxxxx
+  #certPath: xxxx
